@@ -1,0 +1,32 @@
+# Python
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.joblib
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Node / Frontend
+node_modules/
+dist/
+.vite/
+
+# Database & Runtime artifacts
+*.db
+*.sqlite*
+data/*.db
+data/reports/*
+*.pdf
+.env
+
+# Backups & Archives
+*.zip
+*.tar.gz
+
+# OS & Logs
+.DS_Store
+*.log
