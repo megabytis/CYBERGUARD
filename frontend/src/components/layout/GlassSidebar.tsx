@@ -8,7 +8,6 @@ import {
   LockKeyhole,
 } from 'lucide-react';
 import { Logo } from './Logo';
-import { useAuth } from '@/context/AuthContext';
 
 const navItems = [
   { to: '/app/scanner', label: 'Analyze', icon: Zap },
@@ -26,17 +25,6 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({
   isCollapsed,
   onOpenCopilot,
 }) => {
-  const { user } = useAuth();
-
-  const fullName = user?.profile?.full_name || 'Alex Kim';
-  const role = user?.role === 'admin' ? 'Lead Security Analyst' : 'Security Analyst';
-  const initials = fullName
-    .split(' ')
-    .map((n) => n[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
-
   return (
     <aside className={isCollapsed ? 'collapsed' : ''}>
       <div>
@@ -83,14 +71,6 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({
             <small>All systems operational</small>
           </div>
         </div>
-
-        <NavLink to="/app/profile" className="user hover:bg-white/5 transition-colors rounded-lg">
-          <span>{initials}</span>
-          <div>
-            <b>{fullName}</b>
-            <small>{role}</small>
-          </div>
-        </NavLink>
       </div>
     </aside>
   );

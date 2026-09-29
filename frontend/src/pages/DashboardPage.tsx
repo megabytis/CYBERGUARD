@@ -37,11 +37,8 @@ const getVectorIcon = (type: string) => {
 
 export const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-
-  const analystName = (user?.profile?.full_name || 'ALEX KIM').toUpperCase();
 
   const fetchStats = async () => {
     try {
@@ -88,7 +85,7 @@ export const DashboardPage: React.FC = () => {
       {/* Page Header */}
       <header className="page-head">
         <div>
-          <div className="eyebrow">GOOD MORNING, {analystName}</div>
+          <div className="eyebrow">DEFENSIVE THREAT TELEMETRY &bull; SOC CONSOLE</div>
           <h1>Protection center</h1>
           <p>Monitor analysis activity, risk trends and security findings.</p>
         </div>

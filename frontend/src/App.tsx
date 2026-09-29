@@ -30,7 +30,7 @@ function AppRoutes() {
         <Route path="reports" element={<ReportsPage />} />
         <Route path="analytics" element={<AnalyticsPage />} />
         <Route path="copilot" element={<AICopilotPage />} />
-        <Route path="profile" element={<ProfilePage />} />
+        <Route path="profile" element={<Navigate to="/app/settings" replace />} />
         <Route path="settings" element={<SettingsPage />} />
       </Route>
 

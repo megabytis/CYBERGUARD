@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Bell, Menu, Check } from 'lucide-react';
-import { useAuth } from '@/context/AuthContext';
 import { ThemeToggle } from '@/components/common/ThemeToggle';
 
 interface GlassNavbarProps {
@@ -13,16 +12,7 @@ export const GlassNavbar: React.FC<GlassNavbarProps> = ({
   onToggleSidebar,
   isSidebarCollapsed,
 }) => {
-  const { user } = useAuth();
   const [showNotifications, setShowNotifications] = useState(false);
-
-  const fullName = user?.profile?.full_name || 'Alex Kim';
-  const initials = fullName
-    .split(' ')
-    .map((n) => n[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
 
   return (
     <header className="app-header">
@@ -78,9 +68,12 @@ export const GlassNavbar: React.FC<GlassNavbarProps> = ({
           )}
         </div>
 
-        {/* User avatar display */}
+        {/* Live SOC Status Indicator */}
         <div className="flex items-center gap-2">
-          <b title={fullName}>{initials}</b>
+          <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan/30 text-cyan text-xs font-mono font-bold tracking-wider">
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan animate-pulse" />
+            CONSOLE LIVE
+          </span>
         </div>
       </div>
     </header>
