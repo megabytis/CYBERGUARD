@@ -457,4 +457,60 @@ select option {
   color: #e8f3f6;
 }
 
+/* Scanner X-Ray & Projector UI Utilities */
+.segment-block {
+  position: relative;
+  min-height: 120px;
+  overflow: hidden;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 16px;
+  background: rgba(8, 12, 18, 0.75);
+  padding: 18px;
+  backdrop-filter: blur(12px);
+  transition: box-shadow 0.4s ease, border-color 0.4s ease;
+}
+
+.scan-beam {
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 10;
+  width: 2px;
+  background: #FFFFFF;
+  box-shadow: 0 0 20px 6px rgba(255, 255, 255, 0.55);
+}
+
+.stage-chip {
+  min-height: 76px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 14px 16px;
+  color: white;
+  transition: border-color 0.3s ease, background 0.3s ease;
+}
+
+.stage-chip-active {
+  border-color: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.10);
+  color: #FFFFFF;
+  box-shadow: 0 0 16px rgba(255, 255, 255, 0.15);
+}
+
+.stage-chip-ai.stage-chip-active {
+  border-color: rgba(0, 217, 255, 0.85);
+  background: rgba(0, 217, 255, 0.12);
+  color: #00D9FF;
+  box-shadow: 0 0 18px rgba(0, 217, 255, 0.25);
+}
+
+.score-display {
+  font-size: clamp(6.5rem, 15vw, 10rem);
+  font-weight: 900;
+  line-height: 0.82;
+  letter-spacing: -0.06em;
+}
+
 

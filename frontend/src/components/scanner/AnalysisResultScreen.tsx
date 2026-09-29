@@ -13,7 +13,7 @@ import { ScanRecord, api } from '@/lib/api';
 interface AnalysisResultScreenProps {
   scan: ScanRecord;
   onRescan: () => void;
-  onOpenCopilot: () => void;
+  onOpenCopilot: (scan?: ScanRecord) => void;
 }
 
 export const AnalysisResultScreen: React.FC<AnalysisResultScreenProps> = ({
@@ -228,7 +228,7 @@ export const AnalysisResultScreen: React.FC<AnalysisResultScreenProps> = ({
             <button className="button ghost" onClick={() => handleAction('Security Bulletin Dispatched')}>
               Report
             </button>
-            <button className="button ghost" onClick={onOpenCopilot}>
+            <button className="button ghost" onClick={() => onOpenCopilot(scan)}>
               <Bot className="w-3.5 h-3.5 mr-1 inline text-cyan" /> Ask Copilot
             </button>
             <button

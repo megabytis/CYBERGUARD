@@ -28,6 +28,8 @@ export const RollingNumber: React.FC<RollingNumberProps> = ({
 
     if (!controllerRef.current) {
       try {
+        // Clear any initial content so createRollingNumber doesn't duplicate digits
+        containerRef.current.innerHTML = '';
         controllerRef.current = createRollingNumber(containerRef.current, {
           value,
           duration: prefersReducedMotion ? 0 : duration,
@@ -70,7 +72,7 @@ export const RollingNumber: React.FC<RollingNumberProps> = ({
   return (
     <span className={`inline-flex items-baseline font-mono tabular-nums ${className}`}>
       {prefix && <span>{prefix}</span>}
-      <span ref={containerRef}>{value}</span>
+      <span ref={containerRef} />
       {suffix && <span>{suffix}</span>}
     </span>
   );

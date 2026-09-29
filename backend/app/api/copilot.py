@@ -53,9 +53,17 @@ async def chat_with_copilot(
                 "input_summary": scan.input_summary,
                 "risk_score": scan.risk_score,
                 "risk_level": scan.risk_level,
-                "findings": scan.findings,
+                "findings": [
+                    {
+                        "severity": f.severity,
+                        "title": f.title,
+                        "description": f.description,
+                        "category": f.category,
+                    }
+                    for f in (scan.findings or [])
+                ],
                 "executive_summary": scan.executive_summary,
-                "recommendations": scan.recommendations,
+                "recommendations": scan.recommendations or [],
             }
 
     # Save user message

@@ -26,6 +26,7 @@ data/reports/*
 # Backups & Archives
 *.zip
 *.tar.gz
+cyberguard-component/
 
 # OS & Logs
 .DS_Store

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Bot, Send, Trash2, Shield, Sparkles } from 'lucide-react';
+import { Bot, Send, Trash2, Shield, Sparkles, AlertTriangle, ArrowRight } from 'lucide-react';
 import { GlassDrawer } from '@/components/ui/GlassModal';
 import { GlassButton } from '@/components/ui/GlassButton';
 import { GlassInput } from '@/components/ui/GlassInput';
@@ -37,29 +37,48 @@ export const AIChatDrawer: React.FC<AIChatDrawerProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [conversationId, setConversationId] = useState<string | undefined>();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const lastLinkedScanIdRef = useRef<string | null>(null);
+
+  // Link scan context dynamically
+  useEffect(() => {
+    if (activeScan && activeScan.id !== lastLinkedScanIdRef.current) {
+      lastLinkedScanIdRef.current = activeScan.id;
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: String(Date.now()),
+          sender: 'assistant',
+          content: `Inspection context linked to ${activeScan.input_type.toUpperCase()} (#${activeScan.id.slice(0, 8)}) • Risk Score ${activeScan.risk_score}/100 (${activeScan.risk_level}). Ask me why this was flagged or for a recommended containment playbook.`,
+          timestamp: new Date(),
+        },
+      ]);
+    }
+  }, [activeScan?.id]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoading]);
 
-  const handleSend = async (e?: React.FormEvent) => {
+  const handleSend = async (e?: React.FormEvent, customQuery?: string) => {
     if (e) e.preventDefault();
-    if (!input.trim() || isLoading) return;
+    const query = (customQuery || input).trim();
+    if (!query || isLoading) return;
 
-    const userText = input.trim();
-    setInput('');
+    if (!customQuery) {
+      setInput('');
+    }
 
     const newMsg: Message = {
       id: String(Date.now()),
       sender: 'user',
-      content: userText,
+      content: query,
       timestamp: new Date(),
     };
     setMessages((prev) => [...prev, newMsg]);
     setIsLoading(true);
 
     try {
-      const res = await api.chatCopilot(userText, activeScan?.id, conversationId);
+      const res = await api.chatCopilot(query, activeScan?.id, conversationId);
       setConversationId(res.conversation_id);
       setMessages((prev) => [
         ...prev,
@@ -77,7 +96,8 @@ export const AIChatDrawer: React.FC<AIChatDrawerProps> = ({
         {
           id: String(Date.now() + 1),
           sender: 'assistant',
-          content: 'Unable to communicate with the defense copilot engine. Please ensure the backend service is running.',
+          content:
+            'Unable to communicate with the defense copilot engine. Please ensure the backend service is running.',
           timestamp: new Date(),
         },
       ]);
@@ -113,7 +133,7 @@ export const AIChatDrawer: React.FC<AIChatDrawerProps> = ({
       <div className="flex flex-col h-[calc(100vh-170px)] justify-between">
         {/* Active scan indicator banner if linked */}
         {activeScan && (
-          <div className="mb-4 p-3 rounded-xl bg-surface-glass border border-information/30 text-xs font-mono text-text-secondary flex items-center justify-between">
+          <div className="mb-4 p-3.5 rounded-xl bg-surface-glass border border-information/30 text-xs font-mono text-text-secondary flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Shield className="w-4 h-4 text-information" />
               <span>Target: {activeScan.input_type.toUpperCase()}</span>
@@ -170,9 +190,36 @@ export const AIChatDrawer: React.FC<AIChatDrawerProps> = ({
           <div ref={messagesEndRef} />
         </div>
 
+        {/* Quick prompt suggestions when scan is active */}
+        {activeScan && (
+          <div className="flex flex-wrap gap-2 pt-3 pb-1">
+            <button
+              type="button"
+              onClick={() => handleSend(undefined, 'Why was this flagged?')}
+              className="text-xs px-2.5 py-1 rounded-full border border-border hover:border-information text-text-secondary hover:text-white transition cursor-pointer"
+            >
+              🔍 Why was this flagged?
+            </button>
+            <button
+              type="button"
+              onClick={() => handleSend(undefined, 'What containment action should I take?')}
+              className="text-xs px-2.5 py-1 rounded-full border border-border hover:border-information text-text-secondary hover:text-white transition cursor-pointer"
+            >
+              🛡️ Recommended containment playbook
+            </button>
+            <button
+              type="button"
+              onClick={() => handleSend(undefined, 'Generate executive briefing')}
+              className="text-xs px-2.5 py-1 rounded-full border border-border hover:border-information text-text-secondary hover:text-white transition cursor-pointer"
+            >
+              📋 Executive brief
+            </button>
+          </div>
+        )}
+
         {/* Input Bar */}
-        <div className="pt-4 border-t border-border space-y-2">
-          <form onSubmit={handleSend} className="flex items-center gap-2">
+        <div className="pt-2 border-t border-border space-y-2">
+          <form onSubmit={(e) => handleSend(e)} className="flex items-center gap-2">
             <GlassInput
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -190,7 +237,7 @@ export const AIChatDrawer: React.FC<AIChatDrawerProps> = ({
           </form>
 
           <div className="flex items-center justify-between text-xs font-mono text-text-muted px-1">
-            <span>Powered by Server-Side Groq / Local Heuristics</span>
+            <span>Server-Side Groq Cloud & Local Defensive AI</span>
             <button
               onClick={handleClear}
               className="flex items-center gap-1 hover:text-critical transition-colors cursor-pointer"

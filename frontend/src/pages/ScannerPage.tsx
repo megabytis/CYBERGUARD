@@ -14,6 +14,14 @@ import {
   Upload,
 } from 'lucide-react';
 import { AnalysisResultScreen } from '@/components/scanner/AnalysisResultScreen';
+import { XRayScanner } from '@/components/scanner/XRayScanner';
+import { VerdictTakeover } from '@/components/scanner/VerdictTakeover';
+import {
+  parseUrlToScanProfile,
+  phishingProfile,
+  safeProfile,
+  ScanProfile,
+} from '@/components/scanner/types';
 import { api, ScanRecord } from '@/lib/api';
 
 const types = [
@@ -33,7 +41,7 @@ Subject: URGENT: Immediate Wire Transfer Required for Acquisition Closing
 
 Please execute the attached international wire transfer of $840,000 before 4 PM UTC.
 Do not discuss with other staff until public disclosure. Immediate verification needed.`,
-  url: 'https://apple-id-verify.security-update.cc/login?redirect=account-lockout',
+  url: phishingProfile.url,
   message: 'USPS Notice: Your package delivery is blocked due to an unpaid $1.99 customs fee. Confirm your address and card at bit.ly/usps-redelivery-tax to avoid return.',
   qr: 'https://paypal-security-verification.com.ru/auth/login?session=expiring',
   auth_log: `Sep 27 11:04:12 auth-server sshd[1401]: Failed password for invalid user admin from 198.51.100.44 port 41232 ssh2
@@ -48,10 +56,11 @@ Authentication-Results: mx.google.com; spf=fail; dkim=fail; dmarc=fail`,
 2026-09-27T11:00:31Z 10.0.4.15:49184 -> 203.0.113.88:4444 PROTO=TCP BYTES_OUT=1420 BYTES_IN=310`,
 };
 
-export const ScannerPage: React.FC<{ onOpenCopilot?: () => void }> = ({
+export const ScannerPage: React.FC<{ onOpenCopilot?: (scan?: ScanRecord | null) => void }> = ({
   onOpenCopilot: propOnOpenCopilot,
 }) => {
-  const outletCtx = useOutletContext<{ onOpenCopilot?: () => void }>() || {};
+  const outletCtx =
+    useOutletContext<{ onOpenCopilot?: (scan?: ScanRecord | null) => void }>() || {};
   const onOpenCopilot = propOnOpenCopilot || outletCtx.onOpenCopilot || (() => {});
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -62,6 +71,14 @@ export const ScannerPage: React.FC<{ onOpenCopilot?: () => void }> = ({
   const [activePipelineStep, setActivePipelineStep] = useState(0);
   const [currentResult, setCurrentResult] = useState<ScanRecord | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  // Dedicated URL X-Ray + Verdict state
+  const [urlScanState, setUrlScanState] = useState<{
+    active: boolean;
+    verdictReady: boolean;
+    profile: ScanProfile;
+    backendScan?: ScanRecord;
+  } | null>(null);
 
   // Check if viewing a specific scan from history or dashboard
   useEffect(() => {
@@ -83,12 +100,14 @@ export const ScannerPage: React.FC<{ onOpenCopilot?: () => void }> = ({
     setQrFile(null);
     setError(null);
     setCurrentResult(null);
+    setUrlScanState(null);
   };
 
   const handleUseExample = () => {
     if (PRESETS[activeTab]) {
       setInput(PRESETS[activeTab]);
       setError(null);
+      setUrlScanState(null);
     }
   };
 
@@ -96,9 +115,74 @@ export const ScannerPage: React.FC<{ onOpenCopilot?: () => void }> = ({
     setInput('');
     setQrFile(null);
     setError(null);
+    setUrlScanState(null);
   };
 
+  // URL Scanner Handler dynamically dissecting and syncing with backend defensive pipeline
+  const handleScanUrl = async () => {
+    if (!input.trim()) {
+      setError('Please provide a destination URL to scan.');
+      return;
+    }
+    setError(null);
+
+    const localProfile = parseUrlToScanProfile(input.trim());
+
+    setUrlScanState({
+      active: true,
+      verdictReady: false,
+      profile: localProfile,
+    });
+
+    // Run backend defensive analysis pipeline concurrently
+    try {
+      const backendScan = await api.analyze('url', input.trim(), true);
+      setUrlScanState((prev) => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          backendScan,
+          profile: {
+            ...prev.profile,
+            score: backendScan.risk_score,
+            verdict:
+              backendScan.risk_score >= 70
+                ? 'critical'
+                : backendScan.risk_score >= 30
+                ? 'review'
+                : 'safe',
+            action:
+              backendScan.recommendations?.[0] ||
+              backendScan.executive_summary ||
+              prev.profile.action,
+            evidence:
+              backendScan.findings && backendScan.findings.length > 0
+                ? backendScan.findings.slice(0, 3).map((f) => ({
+                    label: f.title,
+                    detail: f.description,
+                    severity:
+                      f.severity.toLowerCase() === 'critical' || f.severity.toLowerCase() === 'high'
+                        ? 'critical'
+                        : f.severity.toLowerCase() === 'medium'
+                        ? 'review'
+                        : 'safe',
+                  }))
+                : prev.profile.evidence,
+          },
+        };
+      });
+    } catch (err) {
+      console.warn('Backend scan sync skipped, using local heuristics:', err);
+    }
+  };
+
+  // Generic Analysis Handler for the other 6 vectors
   const runAnalysis = async () => {
+    if (activeTab === 'url') {
+      handleScanUrl();
+      return;
+    }
+
     if (activeTab === 'qr' && !qrFile && !input.trim()) {
       setError('Please upload a QR code image or paste an extracted payload string.');
       return;
@@ -162,7 +246,7 @@ export const ScannerPage: React.FC<{ onOpenCopilot?: () => void }> = ({
         </span>
       </header>
 
-      {/* Type Tabs from v0 */}
+      {/* Type Tabs */}
       <div className="type-tabs">
         {types.map((t) => {
           const Icon = t.icon;
@@ -180,92 +264,171 @@ export const ScannerPage: React.FC<{ onOpenCopilot?: () => void }> = ({
       </div>
 
       {error && (
-        <div className="p-3 mb-4 rounded-lg bg-red/10 border border-red/30 text-red text-xs font-mono">
+        <div className="p-4 mb-4 rounded-xl bg-red/10 border border-red/30 text-red text-[16px] font-mono">
           {error}
         </div>
       )}
 
-      {/* Input Panel from v0 */}
-      <section className="panel input-panel">
-        <div className="panel-head">
-          <div>
-            <div className="eyebrow">{currentTypeConfig.label.toUpperCase()} INPUT</div>
-            <h2>What would you like to inspect?</h2>
-          </div>
-          <button className="select cursor-pointer hover:border-cyan" onClick={handleUseExample}>
-            Use example input
-          </button>
-        </div>
-
-        {activeTab === 'qr' ? (
-          <div className="space-y-4 my-4">
-            <div className="border-2 border-dashed border-line rounded-lg p-6 text-center bg-black/30">
-              <input
-                type="file"
-                id="qr-file-input"
-                accept="image/png,image/jpeg,image/webp"
-                className="hidden"
-                onChange={(e) => {
-                  if (e.target.files?.[0]) setQrFile(e.target.files[0]);
-                }}
-              />
-              <label
-                htmlFor="qr-file-input"
-                className="cursor-pointer flex flex-col items-center justify-center space-y-2"
-              >
-                <div className="p-3 rounded-full bg-white/5 text-cyan border border-cyan/30">
-                  <Upload className="w-6 h-6" />
-                </div>
-                <p className="text-sm font-bold text-text-primary">
-                  {qrFile ? qrFile.name : 'Upload QR code image (PNG, JPEG, WebP)'}
-                </p>
-                <p className="text-xs text-muted-ink">
-                  In-memory decoding without browser auto-redirects.
-                </p>
-              </label>
+      {/* URL Tab Live X-Ray + Verdict Takeover Flow */}
+      {activeTab === 'url' && urlScanState?.active ? (
+        <div className="space-y-6 animate-in fade-in duration-300">
+          <div className="flex items-center justify-between pb-1">
+            <div className="flex items-center gap-2 font-mono text-[16px] text-white/80">
+              <span className="text-white/70">Scanning Target:</span>
+              <span className="font-bold text-white truncate max-w-xl">
+                {urlScanState.profile.url}
+              </span>
             </div>
+            <button
+              type="button"
+              onClick={() => setUrlScanState(null)}
+              className="text-[16px] font-bold text-information hover:underline cursor-pointer"
+            >
+              &larr; Re-enter URL
+            </button>
+          </div>
+
+          {/* Rule 5: Keep the X-Ray lane visible ABOVE the verdict panel */}
+          <XRayScanner
+            url={urlScanState.profile.url}
+            segments={urlScanState.profile.segments}
+            stages={urlScanState.profile.stages}
+            onComplete={() => {
+              setUrlScanState((prev) => (prev ? { ...prev, verdictReady: true } : null));
+            }}
+          />
+
+          {/* Verdict panel appears below once scan settles */}
+          {urlScanState.verdictReady && (
+            <VerdictTakeover
+              score={urlScanState.profile.score}
+              verdict={urlScanState.profile.verdict}
+              action={urlScanState.profile.action}
+              evidence={urlScanState.profile.evidence}
+              scanId={urlScanState.backendScan?.id}
+              aiExplanation={urlScanState.backendScan?.ai_explanation}
+              onOpenCopilot={() => onOpenCopilot(urlScanState.backendScan)}
+              onRescan={() => setUrlScanState(null)}
+            />
+          )}
+        </div>
+      ) : (
+        /* Input Panel */
+        <section className="panel input-panel">
+          <div className="panel-head">
+            <div>
+              <div className="eyebrow">{currentTypeConfig.label.toUpperCase()} INPUT</div>
+              <h2>What would you like to inspect?</h2>
+            </div>
+            <button className="select cursor-pointer hover:border-cyan" onClick={handleUseExample}>
+              Use example input
+            </button>
+          </div>
+
+          {/* Quick example toggles on URL tab for judges / demos */}
+          {activeTab === 'url' && (
+            <div className="flex flex-wrap items-center gap-3 my-3">
+              <span className="text-[16px] text-white/70 font-semibold">Test profiles:</span>
+              <button
+                type="button"
+                className="text-[16px] px-3.5 py-1 rounded-full border border-critical/40 bg-critical/10 text-critical font-bold hover:bg-critical/20 transition cursor-pointer"
+                onClick={() => {
+                  setInput(phishingProfile.url);
+                  setError(null);
+                  setUrlScanState(null);
+                }}
+              >
+                Phishing Threat (PayPal Spoof)
+              </button>
+              <button
+                type="button"
+                className="text-[16px] px-3.5 py-1 rounded-full border border-protected/40 bg-protected/10 text-protected font-bold hover:bg-protected/20 transition cursor-pointer"
+                onClick={() => {
+                  setInput(safeProfile.url);
+                  setError(null);
+                  setUrlScanState(null);
+                }}
+              >
+                Safe Destination (NASA.gov)
+              </button>
+            </div>
+          )}
+
+          {activeTab === 'qr' ? (
+            <div className="space-y-4 my-4">
+              <div className="border-2 border-dashed border-line rounded-lg p-6 text-center bg-black/30">
+                <input
+                  type="file"
+                  id="qr-file-input"
+                  accept="image/png,image/jpeg,image/webp"
+                  className="hidden"
+                  onChange={(e) => {
+                    if (e.target.files?.[0]) setQrFile(e.target.files[0]);
+                  }}
+                />
+                <label
+                  htmlFor="qr-file-input"
+                  className="cursor-pointer flex flex-col items-center justify-center space-y-2"
+                >
+                  <div className="p-3 rounded-full bg-white/5 text-cyan border border-cyan/30">
+                    <Upload className="w-6 h-6" />
+                  </div>
+                  <p className="text-sm font-bold text-text-primary">
+                    {qrFile ? qrFile.name : 'Upload QR code image (PNG, JPEG, WebP)'}
+                  </p>
+                  <p className="text-xs text-muted-ink">
+                    In-memory decoding without browser auto-redirects.
+                  </p>
+                </label>
+              </div>
+              <textarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Or paste extracted URL / destination string..."
+                rows={3}
+              />
+            </div>
+          ) : (
             <textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Or paste extracted URL / destination string..."
-              rows={3}
+              placeholder={currentTypeConfig.placeholder}
+              rows={activeTab === 'url' ? 3 : 7}
+              className={activeTab === 'url' ? 'font-mono text-[16px]' : ''}
             />
-          </div>
-        ) : (
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder={currentTypeConfig.placeholder}
-            rows={activeTab === 'url' ? 3 : 7}
-          />
-        )}
+          )}
 
-        <div className="input-footer">
-          <small>
-            {input.length} characters &bull; Zero-SSRF Offline Analysis
-          </small>
-          <div className="flex items-center gap-3">
-            <button className="button ghost" onClick={handleClear}>
-              Clear
-            </button>
-            <button
-              className="button primary"
-              disabled={(!input && !qrFile) || loading}
-              onClick={runAnalysis}
-            >
-              {loading ? (
-                'Analyzing signal…'
-              ) : (
-                <>
-                  Analyze with CyberGuard <ArrowRight />
-                </>
-              )}
-            </button>
+          <div className="input-footer">
+            <small className="text-[16px] text-white/70">
+              {input.length} characters &bull; Zero-SSRF Offline Analysis
+            </small>
+            <div className="flex items-center gap-3">
+              <button className="button ghost text-[16px]" onClick={handleClear}>
+                Clear
+              </button>
+              <button
+                className="button primary text-[16px]"
+                disabled={(!input && !qrFile) || loading}
+                onClick={activeTab === 'url' ? handleScanUrl : runAnalysis}
+              >
+                {loading ? (
+                  'Analyzing signal…'
+                ) : activeTab === 'url' ? (
+                  <>
+                    Scan URL <ArrowRight />
+                  </>
+                ) : (
+                  <>
+                    Analyze with CyberGuard <ArrowRight />
+                  </>
+                )}
+              </button>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
-      {/* Analysis Pipeline & Processing Overlay from v0 */}
+      {/* Analysis Pipeline & Processing Overlay for other 6 vectors */}
       {loading && (
         <div className="mt-6 space-y-4 animate-in fade-in">
           <div className="analysis-pipeline">
