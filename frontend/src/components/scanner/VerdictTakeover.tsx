@@ -9,7 +9,6 @@ import {
   RotateCcw,
   Download,
 } from 'lucide-react';
-import { GlassPanel } from '@/components/ui/GlassPanel';
 import { GlassButton } from '@/components/ui/GlassButton';
 import { GlassBadge } from '@/components/ui/GlassBadge';
 import { RollingNumber } from '@/components/ui/RollingNumber';
@@ -75,78 +74,76 @@ export const VerdictTakeover: React.FC<VerdictTakeoverProps> = ({
 
   return (
     <motion.section
-      className="relative overflow-hidden rounded-[28px] border p-6 md:p-10 backdrop-blur-xl transition-colors duration-700"
+      className="relative overflow-hidden rounded-[24px] border p-6 md:p-8 backdrop-blur-xl transition-colors duration-500"
       style={{
         backgroundColor: config.tint,
-        borderColor: 'rgba(255, 255, 255, 0.16)',
+        borderColor: 'rgba(255, 255, 255, 0.14)',
         boxShadow:
-          'inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 24px 80px rgba(0, 0, 0, 0.35)',
+          'inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 20px 60px rgba(0, 0, 0, 0.35)',
       }}
-      initial={{ opacity: 0, y: 24 }}
+      initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: reduceMotion ? 0.1 : 0.65 }}
+      transition={{ duration: reduceMotion ? 0.1 : 0.45 }}
       aria-live="polite"
       aria-label="Scan verdict"
     >
       {/* Decorative Radial Threat Aura */}
       <div
-        className="pointer-events-none absolute inset-0 opacity-70"
+        className="pointer-events-none absolute inset-0 opacity-60"
         style={{
-          background: `radial-gradient(circle at 18% 15%, ${config.radialGlow}, transparent 40%)`,
+          background: `radial-gradient(circle at 18% 15%, ${config.radialGlow}, transparent 45%)`,
         }}
         aria-hidden="true"
       />
 
-      <div className="relative grid gap-10 lg:grid-cols-[1.1fr_1fr] lg:items-center">
+      <div className="relative grid gap-8 lg:grid-cols-[1.1fr_1fr] lg:items-center">
         {/* Left Column: AI Explanation & Score Verdict */}
         <div>
-          {/* Cyan is used strictly for AI reasoning */}
-          <div className="flex items-center gap-2 text-[16px] font-extrabold tracking-[0.18em] text-information">
-            <Sparkles size={18} aria-hidden="true" /> AI EXPLANATION
+          <div className="flex items-center gap-2 text-xs font-mono font-bold tracking-wider text-information">
+            <Sparkles size={15} aria-hidden="true" />
+            <span>THREAT ASSESSMENT VERDICT</span>
           </div>
 
-          <div className={`mt-5 flex items-end gap-4 ${config.textColor}`}>
+          <div className={`mt-3 flex items-end gap-3 ${config.textColor}`}>
             <RollingNumber
               value={score}
-              duration={900}
+              duration={700}
               className="score-display font-mono font-black"
             />
-            <span className="mb-4 text-2xl font-bold text-white/70">/ 100</span>
+            <span className="mb-2 text-xl font-bold text-white/50">/ 100</span>
           </div>
 
-          <div className="flex items-center gap-4">
-            <Icon size={38} className={config.textColor} aria-hidden="true" />
-            <h2 className="text-5xl md:text-7xl font-black tracking-[0.08em] text-white">
+          <div className="flex items-center gap-3 mt-1">
+            <Icon size={30} className={config.textColor} aria-hidden="true" />
+            <h2 className="text-3xl md:text-4xl font-extrabold tracking-wide text-white">
               {config.label}
             </h2>
           </div>
 
-          {/* Projector Compliance: 18px body text */}
-          <p className="mt-6 max-w-xl text-[18px] font-medium leading-relaxed text-white/90">
+          <p className="mt-3 max-w-xl text-sm md:text-base font-normal leading-relaxed text-white/80">
             {action}
           </p>
 
-          <div className="mt-8 flex flex-wrap items-center gap-4">
-            {/* Cyan button for AI Copilot action */}
+          <div className="mt-6 flex flex-wrap items-center gap-3">
             <button
               type="button"
               onClick={onOpenCopilot}
-              className="inline-flex items-center gap-3 rounded-xl border border-information/70 bg-information hover:bg-information/90 px-6 py-3.5 text-[18px] font-extrabold text-[#08090C] transition-all hover:scale-[1.02] active:scale-[0.98] shadow-[0_0_25px_rgba(0,217,255,0.4)] focus:outline-none focus:ring-2 focus:ring-information"
+              className="inline-flex items-center gap-2 rounded-xl border border-information/70 bg-information hover:bg-information/90 px-5 py-2.5 text-sm md:text-base font-bold text-[#08090C] transition-all hover:scale-[1.02] active:scale-[0.98] shadow-[0_0_20px_rgba(0,217,255,0.35)] focus:outline-none focus:ring-2 focus:ring-information"
               aria-label="Ask AI Copilot for deep forensic explanation"
             >
-              <Sparkles size={20} aria-hidden="true" />
+              <Sparkles size={17} aria-hidden="true" />
               Ask AI Copilot
-              <ArrowRight size={20} aria-hidden="true" />
+              <ArrowRight size={17} aria-hidden="true" />
             </button>
 
             {scanId && (
               <GlassButton
                 variant="secondary"
-                size="lg"
+                size="md"
                 onClick={() => window.open(`/api/reports/download/${scanId}`, '_blank')}
-                className="text-[16px] font-bold text-white/80 hover:text-white"
+                className="text-sm font-semibold text-white/85 hover:text-white"
               >
-                <Download size={18} className="mr-2" />
+                <Download size={16} className="mr-1.5" />
                 Download PDF
               </GlassButton>
             )}
@@ -154,58 +151,57 @@ export const VerdictTakeover: React.FC<VerdictTakeoverProps> = ({
             {onRescan && (
               <GlassButton
                 variant="secondary"
-                size="lg"
+                size="md"
                 onClick={onRescan}
-                className="text-[16px] font-bold text-white/80 hover:text-white"
+                className="text-sm font-semibold text-white/85 hover:text-white"
               >
-                <RotateCcw size={18} className="mr-2" />
-                Scan Another URL
+                <RotateCcw size={16} className="mr-1.5" />
+                New Scan
               </GlassButton>
             )}
           </div>
         </div>
 
         {/* Right Column: Evidence Findings */}
-        <div className="rounded-2xl border border-white/15 bg-black/40 p-6 md:p-7 backdrop-blur-md">
-          <div className="mb-6 flex items-center justify-between">
-            <div className="flex items-center gap-3 text-xl font-bold text-white">
-              <span className={`h-3.5 w-3.5 rounded-full ${config.dotClass}`} aria-hidden="true" />
+        <div className="rounded-2xl border border-white/10 bg-black/40 p-5 md:p-6 backdrop-blur-md">
+          <div className="mb-4 flex items-center justify-between">
+            <div className="flex items-center gap-2.5 text-base md:text-lg font-bold text-white">
+              <span className={`h-2.5 w-2.5 rounded-full ${config.dotClass}`} aria-hidden="true" />
               Why this verdict
             </div>
-            <span className="font-mono text-[16px] font-semibold text-white/70">
+            <span className="font-mono text-xs font-semibold text-white/60">
               {evidence.length} Indicators
             </span>
           </div>
 
-          <div className="space-y-5">
+          <div className="space-y-3.5">
             {evidence.slice(0, 3).map((item, index) => {
               const itemConfig = verdictConfig[item.severity];
               return (
                 <motion.div
                   key={item.label}
-                  className="flex gap-4 items-start"
-                  initial={{ opacity: 0, x: 14 }}
+                  className="flex gap-3 items-start p-3 rounded-xl bg-white/[0.02] border border-white/5"
+                  initial={{ opacity: 0, x: 10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: reduceMotion ? 0 : 0.2 + index * 0.12 }}
+                  transition={{ delay: reduceMotion ? 0 : 0.15 + index * 0.1 }}
                 >
                   <div
-                    className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-[16px] font-bold ${itemConfig.textColor} ${itemConfig.borderColor}`}
+                    className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-xs font-bold ${itemConfig.textColor} ${itemConfig.borderColor}`}
                   >
                     {index + 1}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap items-center gap-3">
-                      <h3 className="text-[18px] font-bold text-white">{item.label}</h3>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h3 className="text-sm md:text-base font-bold text-white">{item.label}</h3>
                       <GlassBadge
                         variant={itemConfig.badgeVariant}
-                        size="md"
-                        className="text-[16px] py-0.5 font-bold"
+                        size="sm"
+                        className="text-xs py-0.5 font-bold"
                       >
                         {item.severity}
                       </GlassBadge>
                     </div>
-                    {/* Projector rule: minimum 65% opacity */}
-                    <p className="mt-1 text-[16px] leading-relaxed text-white/75">
+                    <p className="mt-1 text-xs md:text-sm leading-relaxed text-white/70">
                       {item.detail}
                     </p>
                   </div>
@@ -218,11 +214,11 @@ export const VerdictTakeover: React.FC<VerdictTakeoverProps> = ({
 
       {/* Expandable Forensic Narrative if generated */}
       {aiExplanation && (
-        <div className="mt-8 rounded-2xl border border-information/20 bg-information/[0.04] p-6 backdrop-blur-md">
-          <div className="flex items-center gap-2 text-[16px] font-bold text-information mb-2">
-            <Sparkles size={18} /> Forensic AI Narrative
+        <div className="mt-6 rounded-xl border border-information/20 bg-information/[0.03] p-5 backdrop-blur-md">
+          <div className="flex items-center gap-2 text-sm font-bold text-information mb-2">
+            <Sparkles size={16} /> Forensic AI Narrative
           </div>
-          <div className="text-[16px] leading-relaxed text-white/85 whitespace-pre-line font-sans">
+          <div className="text-sm leading-relaxed text-white/80 whitespace-pre-line font-sans">
             {aiExplanation}
           </div>
         </div>

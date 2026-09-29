@@ -507,10 +507,10 @@ select option {
 }
 
 .score-display {
-  font-size: clamp(6.5rem, 15vw, 10rem);
-  font-weight: 900;
-  line-height: 0.82;
-  letter-spacing: -0.06em;
+  font-size: clamp(3rem, 5vw, 4.25rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
 }
 
 

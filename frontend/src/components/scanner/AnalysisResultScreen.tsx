@@ -191,7 +191,7 @@ export const AnalysisResultScreen: React.FC<AnalysisResultScreenProps> = ({
           aria-hidden="true"
         />
 
-        <div className="relative grid gap-10 lg:grid-cols-[1.15fr_1fr] lg:items-center">
+        <div className="relative grid gap-8 lg:grid-cols-[1.15fr_1fr] lg:items-center">
           {/* Left Column: Score, Verdict & Incident Response CTA */}
           <div>
             <div className="flex flex-wrap items-center gap-3">
@@ -205,25 +205,25 @@ export const AnalysisResultScreen: React.FC<AnalysisResultScreenProps> = ({
             </div>
 
             {/* Score Numerical Rolling Counter */}
-            <div className={`mt-5 flex items-end gap-4 ${config.textColor}`}>
+            <div className={`mt-3 flex items-end gap-3 ${config.textColor}`}>
               <RollingNumber
                 value={scan.risk_score}
-                duration={900}
+                duration={700}
                 className="score-display font-mono font-black"
               />
-              <span className="mb-4 text-2xl font-bold text-white/70">/ 100</span>
+              <span className="mb-2 text-xl font-bold text-white/50">/ 100</span>
             </div>
 
             {/* Verdict Badge */}
-            <div className="flex items-center gap-4">
-              <Icon size={38} className={config.textColor} aria-hidden="true" />
-              <h2 className="text-5xl md:text-7xl font-black tracking-[0.08em] text-white">
+            <div className="flex items-center gap-3 mt-1">
+              <Icon size={30} className={config.textColor} aria-hidden="true" />
+              <h2 className="text-3xl md:text-4xl font-extrabold tracking-wide text-white">
                 {config.label}
               </h2>
             </div>
 
             {/* Executive Statement */}
-            <p className="mt-5 max-w-xl text-[18px] font-medium leading-relaxed text-white/90">
+            <p className="mt-3 max-w-xl text-sm md:text-base font-normal leading-relaxed text-white/80">
               {scan.executive_summary ||
                 (verdictKey === 'critical'
                   ? 'High-confidence defensive alerts detected. Immediate containment and isolation recommended.'
@@ -233,42 +233,42 @@ export const AnalysisResultScreen: React.FC<AnalysisResultScreenProps> = ({
             </p>
 
             {/* Ingestion Target Snippet */}
-            <div className="mt-4 p-3 rounded-lg bg-black/40 border border-white/10 max-w-xl font-mono text-xs text-white/70 truncate">
+            <div className="mt-3 p-2.5 rounded-lg bg-black/40 border border-white/10 max-w-xl font-mono text-xs text-white/70 truncate">
               <span className="text-white/40 select-none mr-2">TARGET:</span>
               {scan.input_summary || scan.input_payload.slice(0, 70)}
             </div>
 
             {/* Primary Action Buttons */}
-            <div className="mt-8 flex flex-wrap items-center gap-4">
+            <div className="mt-6 flex flex-wrap items-center gap-3">
               {/* Cyan Copilot Button */}
               <button
                 type="button"
                 onClick={() => onOpenCopilot(scan)}
-                className="inline-flex items-center gap-3 rounded-xl border border-information/70 bg-information hover:bg-information/90 px-6 py-3.5 text-[18px] font-extrabold text-[#08090C] transition-all hover:scale-[1.02] active:scale-[0.98] shadow-[0_0_25px_rgba(0,217,255,0.4)] focus:outline-none focus:ring-2 focus:ring-information"
+                className="inline-flex items-center gap-2 rounded-xl border border-information/70 bg-information hover:bg-information/90 px-5 py-2.5 text-sm md:text-base font-bold text-[#08090C] transition-all hover:scale-[1.02] active:scale-[0.98] shadow-[0_0_20px_rgba(0,217,255,0.35)] focus:outline-none focus:ring-2 focus:ring-information"
               >
-                <Sparkles size={20} aria-hidden="true" />
+                <Sparkles size={17} aria-hidden="true" />
                 Ask AI Copilot
-                <ArrowRight size={20} aria-hidden="true" />
+                <ArrowRight size={17} aria-hidden="true" />
               </button>
 
               <GlassButton
                 variant="secondary"
-                size="lg"
+                size="md"
                 onClick={handleDownloadPDF}
                 disabled={isGeneratingPdf}
-                className="text-[16px] font-bold text-white/80 hover:text-white"
+                className="text-sm font-semibold text-white/85 hover:text-white"
               >
-                <Download size={18} className="mr-2" />
+                <Download size={16} className="mr-1.5" />
                 {isGeneratingPdf ? 'Generating...' : 'Download PDF'}
               </GlassButton>
 
               <GlassButton
                 variant="secondary"
-                size="lg"
+                size="md"
                 onClick={onRescan}
-                className="text-[16px] font-bold text-white/80 hover:text-white"
+                className="text-sm font-semibold text-white/85 hover:text-white"
               >
-                <RotateCcw size={18} className="mr-2" />
+                <RotateCcw size={16} className="mr-1.5" />
                 New Scan
               </GlassButton>
             </div>
