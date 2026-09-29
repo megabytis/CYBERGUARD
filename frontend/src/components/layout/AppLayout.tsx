@@ -9,6 +9,7 @@ import { ScanRecord } from '@/lib/api';
 export const CyberGuardAppShell: React.FC = () => {
   const [isCopilotOpen, setIsCopilotOpen] = useState(false);
   const [activeScan, setActiveScan] = useState<ScanRecord | null>(null);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const handleOpenCopilot = (scan?: ScanRecord | null) => {
     if (scan) {
@@ -17,17 +18,27 @@ export const CyberGuardAppShell: React.FC = () => {
     setIsCopilotOpen(true);
   };
 
+  const toggleSidebar = () => {
+    setSidebarCollapsed((prev) => !prev);
+  };
+
   return (
-    <div className="app-shell selection:bg-cyan-500/20 selection:text-cyan-400">
+    <div className={`app-shell selection:bg-cyan-500/20 selection:text-cyan-400 ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
       {/* Global Command Palette (⌘ K) */}
       <GlassCommandPalette onOpenCopilot={() => handleOpenCopilot()} />
 
-      {/* Left Sidebar from v0 */}
-      <GlassSidebar onOpenCopilot={() => handleOpenCopilot()} />
+      {/* Left Sidebar */}
+      <GlassSidebar
+        isCollapsed={sidebarCollapsed}
+        onOpenCopilot={() => handleOpenCopilot()}
+      />
 
       {/* Main Container */}
       <main className="app-main flex flex-col min-h-screen">
-        <GlassNavbar />
+        <GlassNavbar
+          onToggleSidebar={toggleSidebar}
+          isSidebarCollapsed={sidebarCollapsed}
+        />
 
         {/* Dynamic Route Content */}
         <div className="flex-1 overflow-x-hidden min-w-0">

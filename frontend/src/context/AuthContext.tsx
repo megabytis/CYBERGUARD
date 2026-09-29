@@ -16,7 +16,7 @@ const DEFAULT_ANALYST: User = {
   role: 'admin',
   is_active: true,
   profile: {
-    full_name: 'Chief Security Analyst',
+    full_name: 'Alex Kim',
     organization: 'Cyber Defense Center',
     department: 'Tier-3 Incident Response',
     avatar_url: undefined,
@@ -70,7 +70,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     <AuthContext.Provider
       value={{
         user,
-        isLoading: false,
+        isLoading,
         isAuthenticated: true,
         login,
         logout,

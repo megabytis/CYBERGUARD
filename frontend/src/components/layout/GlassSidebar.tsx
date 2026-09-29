@@ -1,10 +1,9 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import {
-  Gauge,
+  BrainCircuit,
   Zap,
   FileText,
-  BrainCircuit,
   Sparkles,
   LockKeyhole,
 } from 'lucide-react';
@@ -12,14 +11,21 @@ import { Logo } from './Logo';
 import { useAuth } from '@/context/AuthContext';
 
 const navItems = [
-  { to: '/app', label: 'Overview', icon: Gauge, exact: true },
   { to: '/app/scanner', label: 'Analyze', icon: Zap },
-  { to: '/app/history', label: 'Activity', icon: FileText },
   { to: '/app/intelligence', label: 'Intelligence', icon: BrainCircuit },
+  { to: '/app/history', label: 'Activity', icon: FileText },
   { to: '/app/reports', label: 'Reports', icon: FileText },
 ];
 
-export const GlassSidebar: React.FC<{ onOpenCopilot?: () => void }> = ({ onOpenCopilot }) => {
+interface GlassSidebarProps {
+  isCollapsed?: boolean;
+  onOpenCopilot?: () => void;
+}
+
+export const GlassSidebar: React.FC<GlassSidebarProps> = ({
+  isCollapsed,
+  onOpenCopilot,
+}) => {
   const { user } = useAuth();
 
   const fullName = user?.profile?.full_name || 'Alex Kim';
@@ -32,17 +38,17 @@ export const GlassSidebar: React.FC<{ onOpenCopilot?: () => void }> = ({ onOpenC
     .toUpperCase();
 
   return (
-    <aside>
+    <aside className={isCollapsed ? 'collapsed' : ''}>
       <div>
         <Logo />
         <small className="console-label">SECURITY CONSOLE</small>
 
         <div className="side-nav">
-          {navItems.map(({ to, label, icon: Icon, exact }) => (
+          {navItems.map(({ to, label, icon: Icon }) => (
             <NavLink
               key={label}
               to={to}
-              end={exact}
+              title={label}
               className={({ isActive }) => (isActive ? 'active' : '')}
             >
               <Icon className="w-4 h-4 shrink-0" />

@@ -1,13 +1,19 @@
 import React, { useState } from 'react';
-import { Search, Bell, Menu, LogOut, Check } from 'lucide-react';
+import { Bell, Menu, Check } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { ThemeToggle } from '@/components/common/ThemeToggle';
 
 interface GlassNavbarProps {
   onOpenCommandPalette?: () => void;
+  onToggleSidebar?: () => void;
+  isSidebarCollapsed?: boolean;
 }
 
-export const GlassNavbar: React.FC<GlassNavbarProps> = ({ onOpenCommandPalette }) => {
-  const { user, logout } = useAuth();
+export const GlassNavbar: React.FC<GlassNavbarProps> = ({
+  onToggleSidebar,
+  isSidebarCollapsed,
+}) => {
+  const { user } = useAuth();
   const [showNotifications, setShowNotifications] = useState(false);
 
   const fullName = user?.profile?.full_name || 'Alex Kim';
@@ -18,32 +24,27 @@ export const GlassNavbar: React.FC<GlassNavbarProps> = ({ onOpenCommandPalette }
     .slice(0, 2)
     .toUpperCase();
 
-  const handleSearchClick = () => {
-    if (onOpenCommandPalette) {
-      onOpenCommandPalette();
-    } else {
-      window.dispatchEvent(
-        new KeyboardEvent('keydown', { key: 'k', metaKey: true, ctrlKey: true, bubbles: true })
-      );
-    }
-  };
-
   return (
     <header className="app-header">
-      <Menu className="mobile" />
-
-      {/* Global Search Bar with ⌘ K */}
-      <div className="search" onClick={handleSearchClick}>
-        <Search />
-        <span>Search anything</span>
-        <kbd>⌘ K</kbd>
-      </div>
+      {/* 3 lines sidebar toggle button */}
+      <button
+        type="button"
+        onClick={onToggleSidebar}
+        className="sidebar-toggle-btn"
+        title={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        aria-label="Toggle sidebar"
+      >
+        <Menu className="w-5 h-5" />
+      </button>
 
       {/* Header Actions: AI READY status, Notifications, User */}
       <div className="header-actions relative">
         <span className="flex items-center">
           <i /> AI READY
         </span>
+
+        {/* Theme Toggle (Dark / Light) */}
+        <ThemeToggle />
 
         {/* Notifications Icon with popover */}
         <div className="relative">
@@ -77,16 +78,9 @@ export const GlassNavbar: React.FC<GlassNavbarProps> = ({ onOpenCommandPalette }
           )}
         </div>
 
-        {/* User avatar and logout option */}
+        {/* User avatar display */}
         <div className="flex items-center gap-2">
           <b title={fullName}>{initials}</b>
-          <button
-            onClick={logout}
-            className="text-muted-ink hover:text-red transition-colors p-1"
-            title="Log out"
-          >
-            <LogOut className="w-3.5 h-3.5" />
-          </button>
         </div>
       </div>
     </header>

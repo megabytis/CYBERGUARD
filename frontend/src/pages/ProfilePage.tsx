@@ -1,12 +1,12 @@
 import React from 'react';
-import { User as UserIcon, Shield, Building, Award, Key, LogOut } from 'lucide-react';
+import { User as UserIcon, Shield, Building, Award, Key } from 'lucide-react';
 import { GlassPanel } from '@/components/ui/GlassPanel';
 import { GlassButton } from '@/components/ui/GlassButton';
 import { GlassBadge } from '@/components/ui/GlassBadge';
 import { useAuth } from '@/context/AuthContext';
 
 export const ProfilePage: React.FC = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
 
   return (
     <div className="dashboard animate-in fade-in duration-200">
@@ -18,12 +18,6 @@ export const ProfilePage: React.FC = () => {
             Authorized enterprise operator identity, role permissions, and active session status.
           </p>
         </div>
-        <button
-          className="button ghost"
-          onClick={logout}
-        >
-          <LogOut className="w-4 h-4 mr-1.5" /> End Active Session
-        </button>
       </header>
 
       <section className="panel" style={{ padding: '32px', marginTop: '24px' }}>

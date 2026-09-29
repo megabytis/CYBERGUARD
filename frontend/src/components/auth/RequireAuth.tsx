@@ -4,3 +4,4 @@ export const RequireAuth: React.FC<{ children: React.ReactElement }> = ({ childr
   // Hackathon mode: Direct access to all console workspaces
   return children;
 };
+

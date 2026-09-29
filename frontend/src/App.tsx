@@ -1,9 +1,8 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from '@/context/AuthContext';
-import { RequireAuth } from '@/components/auth/RequireAuth';
+import { ThemeProvider } from '@/context/ThemeContext';
+import { AuthProvider } from '@/context/AuthContext';
 import { LandingPage } from '@/pages/LandingPage';
-import { LoginPage } from '@/pages/LoginPage';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { DashboardPage } from '@/pages/DashboardPage';
 import { ScannerPage } from '@/pages/ScannerPage';
@@ -16,30 +15,18 @@ import { ProfilePage } from '@/pages/ProfilePage';
 import { SettingsPage } from '@/pages/SettingsPage';
 
 function AppRoutes() {
-  const { isAuthenticated, logout } = useAuth();
-
   return (
     <Routes>
-      {/* Public Routes */}
-      <Route
-        path="/"
-        element={<LandingPage isAuthenticated={true} onLogout={logout} />}
-      />
-      <Route path="/login" element={<Navigate to="/app" replace />} />
+      {/* Public Landing with Direct Dashboard Link */}
+      <Route path="/" element={<LandingPage />} />
 
-      {/* Protected Enterprise Console Routes */}
-      <Route
-        path="/app"
-        element={
-          <RequireAuth>
-            <AppLayout />
-          </RequireAuth>
-        }
-      >
-        <Route index element={<DashboardPage />} />
+      {/* Direct Enterprise Console Routes - Direct Access */}
+      <Route path="/app" element={<AppLayout />}>
+        <Route index element={<Navigate to="/app/scanner" replace />} />
+        <Route path="overview" element={<Navigate to="/app/scanner" replace />} />
         <Route path="scanner" element={<ScannerPage onOpenCopilot={() => {}} />} />
-        <Route path="history" element={<HistoryPage />} />
         <Route path="intelligence" element={<IntelligencePage />} />
+        <Route path="history" element={<HistoryPage />} />
         <Route path="reports" element={<ReportsPage />} />
         <Route path="analytics" element={<AnalyticsPage />} />
         <Route path="copilot" element={<AICopilotPage />} />
@@ -47,19 +34,24 @@ function AppRoutes() {
         <Route path="settings" element={<SettingsPage />} />
       </Route>
 
+      {/* Redirect legacy login requests directly to dashboard */}
+      <Route path="/login" element={<Navigate to="/app" replace />} />
+
       {/* Fallback */}
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<Navigate to="/app" replace />} />
     </Routes>
   );
 }
 
 export function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <AppRoutes />
-      </BrowserRouter>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <BrowserRouter>
+          <AppRoutes />
+        </BrowserRouter>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 

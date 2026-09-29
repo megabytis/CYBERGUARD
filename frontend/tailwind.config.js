@@ -6,26 +6,26 @@ export default {
     extend: {
       colors: {
         background: {
-          DEFAULT: '#08090C',
-          secondary: '#0D1117',
-          elevated: '#111820',
+          DEFAULT: 'var(--background)',
+          secondary: 'var(--background-secondary)',
+          elevated: 'var(--background-elevated)',
         },
         surface: {
-          DEFAULT: '#111820',
-          glass: 'rgba(255, 255, 255, 0.04)',
-          'glass-elevated': 'rgba(255, 255, 255, 0.065)',
-          'glass-hover': 'rgba(255, 255, 255, 0.085)',
+          DEFAULT: 'var(--surface)',
+          glass: 'var(--surface-glass)',
+          'glass-elevated': 'var(--surface-glass-elevated)',
+          'glass-hover': 'var(--surface-glass-hover)',
           'glass-active': 'rgba(255, 255, 255, 0.12)',
         },
         text: {
-          primary: '#F5F7FA',
-          secondary: '#9AA4B2',
-          muted: '#7A889B',
+          primary: 'var(--text-primary)',
+          secondary: 'var(--text-secondary)',
+          muted: 'var(--text-muted)',
         },
         border: {
-          DEFAULT: 'rgba(255, 255, 255, 0.09)',
-          bright: 'rgba(255, 255, 255, 0.22)',
-          subtle: 'rgba(255, 255, 255, 0.06)',
+          DEFAULT: 'var(--border)',
+          bright: 'var(--border-bright)',
+          subtle: 'var(--border)',
         },
         protected: {
           DEFAULT: '#00FF9D',
