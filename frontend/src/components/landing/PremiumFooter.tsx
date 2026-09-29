@@ -27,7 +27,7 @@ export const FinalCTA: React.FC = () => {
             <GlassButton
               variant="primary"
               size="lg"
-              onClick={() => navigate('/login')}
+              onClick={() => navigate('/app')}
               icon={<Terminal className="w-5 h-5" />}
               className="w-full sm:w-auto shadow-info-glow"
             >
@@ -71,7 +71,7 @@ export const PremiumFooter: React.FC = () => {
               Defensive Console
             </h4>
             <ul className="space-y-2.5 text-sm text-text-secondary font-sans">
-              <li><a href="/login" className="hover:text-text-primary transition-colors">Console Login</a></li>
+              <li><a href="/app" className="hover:text-text-primary transition-colors">Security Console</a></li>
               <li><a href="#capabilities" className="hover:text-text-primary transition-colors">Inspection Vectors</a></li>
               <li><a href="#workflow" className="hover:text-text-primary transition-colors">Protection Workflow</a></li>
               <li><a href="#architecture" className="hover:text-text-primary transition-colors">Security Architecture</a></li>

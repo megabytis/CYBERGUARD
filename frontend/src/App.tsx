@@ -23,9 +23,9 @@ function AppRoutes() {
       {/* Public Routes */}
       <Route
         path="/"
-        element={<LandingPage isAuthenticated={isAuthenticated} onLogout={logout} />}
+        element={<LandingPage isAuthenticated={true} onLogout={logout} />}
       />
-      <Route path="/login" element={<LoginPage />} />
+      <Route path="/login" element={<Navigate to="/app" replace />} />
 
       {/* Protected Enterprise Console Routes */}
       <Route

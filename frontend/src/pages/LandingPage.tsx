@@ -22,15 +22,9 @@ export const LandingPage: React.FC<{ isAuthenticated?: boolean; onLogout?: () =>
           <a href="#protection">Protection</a>
           <a href="#reports">Reports</a>
         </div>
-        {isAuthenticated ? (
-          <Link className="nav-login" to="/app">
-            Security Console <ArrowRight />
-          </Link>
-        ) : (
-          <Link className="nav-login" to="/login">
-            Sign in <ArrowRight />
-          </Link>
-        )}
+        <Link className="nav-login" to="/app">
+          Security Console <ArrowRight />
+        </Link>
       </nav>
 
       {/* Hero Section */}

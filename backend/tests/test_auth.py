@@ -17,9 +17,10 @@ async def test_health():
 async def test_unauthorized_access():
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
-        # Should be protected
+        # In hackathon mode, auto-resolves to default security analyst
         res = await client.get("/api/auth/me")
-        assert res.status_code == 401
+        assert res.status_code == 200
+        assert res.json()["email"] == settings.demo_admin_email
 
 @pytest.mark.anyio
 async def test_login_and_logout_flow():
@@ -51,6 +52,7 @@ async def test_login_and_logout_flow():
         logout_res = await client.post("/api/auth/logout")
         assert logout_res.status_code == 200
 
-        # After logout, accessing /me should fail
+        # After logout in hackathon mode, /me still resolves seamlessly
         me_after_res = await client.get("/api/auth/me")
-        assert me_after_res.status_code == 401
+        assert me_after_res.status_code == 200
+        assert me_after_res.json()["email"] == settings.demo_admin_email

@@ -65,8 +65,8 @@ async def get_current_user(
     db: Session = Depends(get_db),
 ) -> User:
     """
-    Extracts session token from HttpOnly cookie (or Bearer Authorization header).
-    Validates expiration and user status.
+    Extracts session token if present. In demo/hackathon mode, defaults seamlessly to the
+    primary Security Analyst account without requiring login hurdles.
     """
     token = request.cookies.get(settings.cookie_name)
     if not token:
@@ -75,35 +75,34 @@ async def get_current_user(
         if auth_header and auth_header.startswith("Bearer "):
             token = auth_header.split(" ")[1]
 
-    if not token:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Session authentication required. Please log in to the Security Console.",
+    if token:
+        token_digest = hash_token(token)
+        now = datetime.now(timezone.utc)
+        stmt = (
+            select(UserSession)
+            .where(
+                UserSession.token_hash == token_digest,
+                UserSession.expires_at > now,
+            )
         )
+        session_record = db.execute(stmt).scalar_one_or_none()
+        if session_record:
+            user = db.get(User, session_record.user_id)
+            if user and user.is_active:
+                return user
 
-    token_digest = hash_token(token)
-    now = datetime.now(timezone.utc)
+    # Seamless Hackathon Mode: Always resolve to primary demo analyst
+    stmt_default = select(User).where(User.email == settings.demo_admin_email)
+    default_user = db.execute(stmt_default).scalar_one_or_none()
+    if default_user:
+        return default_user
 
-    stmt = (
-        select(UserSession)
-        .where(
-            UserSession.token_hash == token_digest,
-            UserSession.expires_at > now,
-        )
+    stmt_any = select(User).where(User.is_active == True).limit(1)
+    any_user = db.execute(stmt_any).scalar_one_or_none()
+    if any_user:
+        return any_user
+
+    raise HTTPException(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        detail="Security Analyst identity not provisioned in database.",
     )
-    session_record = db.execute(stmt).scalar_one_or_none()
-
-    if not session_record:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Session has expired or was revoked. Please re-authenticate.",
-        )
-
-    user = db.get(User, session_record.user_id)
-    if not user or not user.is_active:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User account is inactive or disabled.",
-        )
-
-    return user
