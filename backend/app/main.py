@@ -18,7 +18,7 @@ logger = logging.getLogger("cyberguard")
 async def lifespan(app: FastAPI):
     # Startup: Ensure DB schema & seed demo account exist
     logger.info("Initializing CYBERGUARD Defensive Cybersecurity Platform...")
-    seed_database()
+    await seed_database()
     logger.info("CYBERGUARD Core Engine is ONLINE and ready.")
     yield
     # Shutdown

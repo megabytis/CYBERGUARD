@@ -26,38 +26,71 @@ import {
 import { GlassPanel } from '@/components/ui/GlassPanel';
 import { GlassBadge } from '@/components/ui/GlassBadge';
 import { SpotlightCard } from '@/components/magicui/SpotlightCard';
-import { api, DashboardStats } from '@/lib/api';
-
-const RISK_TREND_DATA = [
-  { time: '00:00', avgScore: 22, incidents: 1 },
-  { time: '04:00', avgScore: 18, incidents: 0 },
-  { time: '08:00', avgScore: 45, incidents: 3 },
-  { time: '12:00', avgScore: 78, incidents: 8 },
-  { time: '16:00', avgScore: 62, incidents: 5 },
-  { time: '20:00', avgScore: 34, incidents: 2 },
-  { time: '23:59', avgScore: 28, incidents: 1 },
-];
+import { api, DashboardStats, ScanSummaryItem } from '@/lib/api';
 
 export const IntelligencePage: React.FC = () => {
   const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [trendData, setTrendData] = useState<Array<{ time: string; avgScore: number; incidents: number }>>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    api.getDashboardStats()
-      .then(setStats)
-      .catch(console.error)
+    Promise.all([
+      api.getDashboardStats().catch(() => null),
+      api.getScans({ limit: 40 }).catch(() => null),
+    ])
+      .then(([statsData, scansData]) => {
+        if (statsData) setStats(statsData);
+
+        // Group scans into dynamic time buckets
+        const rawScans: ScanSummaryItem[] = scansData?.items || statsData?.recent_scans || [];
+        if (rawScans.length > 0) {
+          const buckets: Record<string, { total: number; count: number }> = {
+            '00:00': { total: 0, count: 0 },
+            '04:00': { total: 0, count: 0 },
+            '08:00': { total: 0, count: 0 },
+            '12:00': { total: 0, count: 0 },
+            '16:00': { total: 0, count: 0 },
+            '20:00': { total: 0, count: 0 },
+            '23:59': { total: 0, count: 0 },
+          };
+
+          rawScans.forEach((s: ScanSummaryItem) => {
+            const d = new Date(s.created_at);
+            const hour = d.getHours();
+            let bucketKey = '23:59';
+            if (hour < 4) bucketKey = '00:00';
+            else if (hour < 8) bucketKey = '04:00';
+            else if (hour < 12) bucketKey = '08:00';
+            else if (hour < 16) bucketKey = '12:00';
+            else if (hour < 20) bucketKey = '16:00';
+            else if (hour < 24) bucketKey = '20:00';
+
+            buckets[bucketKey].total += s.risk_score;
+            buckets[bucketKey].count += 1;
+          });
+
+          const dynamicTrends = Object.entries(buckets).map(([time, data]) => ({
+            time,
+            avgScore: data.count > 0 ? Math.round(data.total / data.count) : 0,
+            incidents: data.count,
+          }));
+          setTrendData(dynamicTrends);
+        } else {
+          setTrendData([
+            { time: '00:00', avgScore: 0, incidents: 0 },
+            { time: '04:00', avgScore: 0, incidents: 0 },
+            { time: '08:00', avgScore: 0, incidents: 0 },
+            { time: '12:00', avgScore: 0, incidents: 0 },
+            { time: '16:00', avgScore: 0, incidents: 0 },
+            { time: '20:00', avgScore: 0, incidents: 0 },
+            { time: '23:59', avgScore: 0, incidents: 0 },
+          ]);
+        }
+      })
       .finally(() => setIsLoading(false));
   }, []);
 
-  const vectorData = stats?.scanner_distribution?.length
-    ? stats.scanner_distribution
-    : [
-        { type: 'url', count: 12 },
-        { type: 'email', count: 9 },
-        { type: 'message', count: 6 },
-        { type: 'auth_log', count: 4 },
-        { type: 'network', count: 5 },
-      ];
+  const vectorData = stats?.scanner_distribution || [];
 
   return (
     <div className="dashboard animate-in fade-in duration-200">
@@ -67,7 +100,7 @@ export const IntelligencePage: React.FC = () => {
           <div className="eyebrow">SECURITY OPERATIONS</div>
           <h1>Threat Intelligence</h1>
           <p>
-            Signals, patterns, and emerging threats across your defensive protection layer.
+            Live signals, patterns, and telemetry across your defensive protection perimeter.
           </p>
         </div>
         <button className="button primary" onClick={() => window.print()}>
@@ -75,27 +108,27 @@ export const IntelligencePage: React.FC = () => {
         </button>
       </header>
 
-      {/* V0 KPIs */}
+      {/* Dynamic Telemetry KPIs */}
       <div className="kpis" style={{ margin: '24px 0' }}>
         <div className="kpi">
-          <span>Active patterns</span>
-          <strong className="cyan">12</strong>
-          <small>+18.2% <em>vs last 30 days</em></small>
+          <span>Total Ingested</span>
+          <strong className="cyan">{stats?.total_scans ?? 0}</strong>
+          <small>Verified defensive signals</small>
         </div>
         <div className="kpi">
-          <span>High confidence</span>
-          <strong className="red">94%</strong>
-          <small>Detection precision</small>
+          <span>Critical Alerts</span>
+          <strong className="red">{stats?.high_risk_count ?? 0}</strong>
+          <small>Immediate containment required</small>
         </div>
         <div className="kpi">
-          <span>Response time</span>
-          <strong className="green">2.4m</strong>
-          <small>Average resolution</small>
+          <span>Mean Threat Score</span>
+          <strong className="green">{Math.round(stats?.average_risk_score ?? 0)}/100</strong>
+          <small>Composite risk baseline</small>
         </div>
         <div className="kpi">
-          <span>Threat coverage</span>
-          <strong className="cyan">7 Vectors</strong>
-          <small>Defensive breadth</small>
+          <span>Monitored Vectors</span>
+          <strong className="cyan">{vectorData.length} of 7 Active</strong>
+          <small>Threat coverage breadth</small>
         </div>
       </div>
 
@@ -113,7 +146,7 @@ export const IntelligencePage: React.FC = () => {
 
           <div className="h-64 w-full mt-4">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={RISK_TREND_DATA} margin={{ top: 15, right: 15, left: -20, bottom: 0 }}>
+              <AreaChart data={trendData} margin={{ top: 15, right: 15, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="scoreGrad" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#00D9FF" stopOpacity={0.4} />
