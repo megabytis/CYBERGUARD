@@ -237,7 +237,7 @@ export const AIChatDrawer: React.FC<AIChatDrawerProps> = ({
           </form>
 
           <div className="flex items-center justify-between text-xs font-mono text-text-muted px-1">
-            <span>Server-Side Groq Cloud & Local Defensive AI</span>
+            <span>Server-Side Defensive AI & Rule Engine</span>
             <button
               onClick={handleClear}
               className="flex items-center gap-1 hover:text-critical transition-colors cursor-pointer"

@@ -46,8 +46,25 @@ class RiskScorer:
 
         heuristic_score = cls.calculate_heuristic_score(findings)
 
-        # Composite score
+        # Baseline composite score (70% Rules + 30% ML)
         composite = (heuristic_score * h_weight) + (ml_score * m_weight)
+
+        # Security Preemption Rule:
+        # A deterministic rule detection of CRITICAL or HIGH severity must NEVER be diluted into SAFE by ML!
+        has_critical = any(f.severity == "CRITICAL" for f in findings)
+        has_high = any(f.severity == "HIGH" for f in findings)
+
+        if has_critical:
+            # Verified critical threat (e.g. brand typosquatting, malware payload, credential harvester)
+            # Minimum floor is 75 (HIGH risk tier)
+            composite = max(composite, heuristic_score, 75.0)
+        elif has_high:
+            # Verified high threat (e.g. deceptive auth lure, credential path)
+            # Minimum floor is 55 (SUSPICIOUS/REVIEW risk tier)
+            composite = max(composite, heuristic_score * 0.85, 55.0)
+        elif heuristic_score > 0:
+            composite = max(composite, heuristic_score * 0.75)
+
         final_score = int(round(max(0.0, min(100.0, composite))))
 
         # Classify risk tier

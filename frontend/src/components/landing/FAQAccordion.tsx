@@ -22,7 +22,7 @@ const faqs: FAQItem[] = [
   {
     question: 'Can CYBERGUARD function in an offline or air-gapped environment?',
     answer:
-      'Yes. The primary scanner heuristics, local ML classifier, scoring engine, SQLite database persistence, and ReportLab PDF generator operate 100% locally in Python without internet access. When Groq AI is unavailable, the platform automatically switches to deterministic rule-based explanations.',
+      'Yes. The primary scanner heuristics, local ML classifier, scoring engine, SQLite database persistence, and ReportLab PDF generator operate 100% locally in Python without internet access. When server-side AI is unavailable, the platform automatically switches to deterministic rule-based explanations.',
   },
   {
     question: 'How are user accounts created and managed?',

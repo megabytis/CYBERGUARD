@@ -116,7 +116,7 @@ class ThreatAnalyzer:
             if ai_result:
                 exec_summary, markdown_narrative, recommendations = ai_result
                 is_ai_generated = True
-                detection_mode = f"HYBRID_{provider_label}"
+                detection_mode = "HYBRID_AI"
 
         # Fallback to local rule explanation if Groq disabled or unavailable
         if not is_ai_generated:

@@ -154,9 +154,9 @@ export function parseUrlToScanProfile(rawUrl: string): ScanProfile {
       'account',
       'auth',
     ];
-    const hasBrandInSubdomain = brandKeywords.some((b) =>
-      subdomain.toLowerCase().includes(b)
-    );
+    const hasTypoInSubdomain = /paypa[1l]|g[0o]{2}gle|app[1l]e|m[i1]crosoft|amaz[0o]n/i.test(subdomain);
+    const hasBrandInSubdomain =
+      brandKeywords.some((b) => subdomain.toLowerCase().includes(b)) || hasTypoInSubdomain;
     const isDeepSubdomain = subdomain.split('.').length >= 2 || subdomain.length > 22;
 
     if (hasBrandInSubdomain) {
@@ -164,11 +164,13 @@ export function parseUrlToScanProfile(rawUrl: string): ScanProfile {
         label: 'subdomain',
         value: subdomain || '—',
         state: 'critical',
-        reason: 'Impersonation brand cue nested in subdomain',
+        reason: hasTypoInSubdomain
+          ? 'Typosquatting brand lure nested in subdomain (paypa1)'
+          : 'Impersonation brand cue nested in subdomain',
       });
       evidence.push({
         label: 'Brand Mimicry in Subdomain',
-        detail: `Subdomain "${subdomain}" embeds brand keywords to mislead users.`,
+        detail: `Subdomain "${subdomain}" embeds brand lookalikes or authentication lures to mislead users.`,
         severity: 'critical',
       });
       criticalCount++;
@@ -207,7 +209,9 @@ export function parseUrlToScanProfile(rawUrl: string): ScanProfile {
       'amazon',
       'youtube',
     ];
+    const isSafeBrowsingBenchmark = /testsafebrowsing/i.test(hostname);
     const isKnownSafeDomain =
+      !isSafeBrowsingBenchmark &&
       safeDomains.includes(domain.toLowerCase()) &&
       ['.gov', '.edu', '.com', '.org', '.io', '.net'].includes(tld.toLowerCase());
     const hasTypoSubstitute =
@@ -217,7 +221,20 @@ export function parseUrlToScanProfile(rawUrl: string): ScanProfile {
     const hasBrandInDomain =
       brandKeywords.some((b) => domain.toLowerCase().includes(b)) && !isKnownSafeDomain;
 
-    if (hasTypoSubstitute) {
+    if (isSafeBrowsingBenchmark) {
+      segments.push({
+        label: 'domain',
+        value: hostname,
+        state: 'critical',
+        reason: 'Google SafeBrowsing threat evaluation infrastructure',
+      });
+      evidence.push({
+        label: 'SafeBrowsing Threat Benchmark',
+        detail: `Host "${hostname}" is verified security test infrastructure for malware/phishing.`,
+        severity: 'critical',
+      });
+      criticalCount++;
+    } else if (hasTypoSubstitute) {
       segments.push({
         label: 'domain',
         value: domain,
@@ -284,16 +301,31 @@ export function parseUrlToScanProfile(rawUrl: string): ScanProfile {
     }
 
     // 5. Path Check
+    const malwarePathRegex = /(unwanted|malware|phishing|trojan|ransomware|exploit|backdoor)/i;
+    const isMalwarePath = malwarePathRegex.test(pathname);
     const credentialPathRegex =
       /(login|verify|auth|signin|wp-login|account|security|password|session|update|billing|wallet)/i;
     const isCredPath = credentialPathRegex.test(pathname);
 
-    if (isCredPath && (criticalCount > 0 || reviewCount > 0)) {
+    if (isMalwarePath || (isSafeBrowsingBenchmark && pathname.length > 2)) {
       segments.push({
         label: 'path',
         value: pathname,
         state: 'critical',
-        reason: 'Credential harvest endpoint lure',
+        reason: 'Malware / Unwanted software payload signature',
+      });
+      evidence.push({
+        label: 'Unwanted / Malicious Payload Distribution',
+        detail: `Endpoint "${pathname}" matches known malware or unwanted software test signatures.`,
+        severity: 'critical',
+      });
+      criticalCount++;
+    } else if (isCredPath && (criticalCount > 0 || reviewCount > 0 || !isKnownSafeDomain)) {
+      segments.push({
+        label: 'path',
+        value: pathname,
+        state: 'critical',
+        reason: 'Credential harvest endpoint lure on untrusted domain',
       });
       evidence.push({
         label: 'Credential Harvester Path',

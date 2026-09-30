@@ -34,7 +34,7 @@ const workflowSteps = [
     icon: <HelpCircle className="w-6 h-6 text-information" />,
     color: 'border-information/40 text-information',
     description:
-      'Demystifies indicators into plain English. Server-side Groq AI generates evidence-grounded threat narratives with zero hallucinations.',
+      'Demystifies indicators into plain English. Server-side CYBERGUARD AI generates evidence-grounded threat narratives with zero hallucinations.',
   },
   {
     step: '05',

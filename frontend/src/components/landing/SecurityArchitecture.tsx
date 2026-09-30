@@ -67,7 +67,7 @@ export const SecurityArchitecture: React.FC = () => {
               Grounded AI Explanations
             </h3>
             <p className="text-base text-text-secondary leading-relaxed">
-              Groq Cloud LLM integration receives only the structured evidence tokens extracted by
+              CYBERGUARD AI reasoning receives only the structured evidence tokens extracted by
               the scanner. The model is strictly constrained to prevent threat hallucinations.
             </p>
           </GlassPanel>

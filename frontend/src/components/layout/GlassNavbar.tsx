@@ -59,7 +59,7 @@ export const GlassNavbar: React.FC<GlassNavbarProps> = ({
                 <div className="p-2 rounded bg-white/5 flex items-start gap-2">
                   <Check className="w-3.5 h-3.5 text-cyan shrink-0 mt-0.5" />
                   <div>
-                    <b className="text-text-primary block font-mono">Groq Llama 3 Synced</b>
+                    <b className="text-text-primary block font-mono">CYBERGUARD AI Synced</b>
                     <span className="text-muted-ink">Evidence synthesis ready with automated local fallback.</span>
                   </div>
                 </div>

@@ -356,7 +356,7 @@ export const AICopilotPage: React.FC = () => {
           </form>
 
           <div className="flex items-center justify-between text-xs font-mono text-[#718590] px-1 mt-2">
-            <span>Powered by Groq Cloud &bull; Local Deterministic Verification</span>
+            <span>Powered by CYBERGUARD AI &bull; Deterministic Verification</span>
             <button
               onClick={handleClear}
               className="flex items-center gap-1 hover:text-[var(--red)] transition-colors cursor-pointer bg-none border-0 text-[#718590]"

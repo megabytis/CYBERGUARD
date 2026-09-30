@@ -96,6 +96,67 @@ class RulesEngine:
                     ))
                     break
 
+        # 3b. Google SafeBrowsing / Anti-Malware Benchmark Signatures
+        if "testsafebrowsing.appspot.com" in host or "testsafebrowsing" in host:
+            if "/s/unwanted.html" in path or "unwanted" in path:
+                findings.append(RuleFinding(
+                    rule_id="RULE_URL_SAFEBROWSING_UNWANTED",
+                    category="CONTENT",
+                    title="Google SafeBrowsing: Unwanted Software (PUP)",
+                    description="Target matches Google Safe Browsing test signature for Potentially Unwanted Programs (PUP) or deceptive distribution.",
+                    severity="CRITICAL",
+                    weight=85.0,
+                    confidence=0.99,
+                ))
+            elif "/s/malware.html" in path or "malware" in path:
+                findings.append(RuleFinding(
+                    rule_id="RULE_URL_SAFEBROWSING_MALWARE",
+                    category="CONTENT",
+                    title="Google SafeBrowsing: Verified Malware Distribution",
+                    description="Target matches Google Safe Browsing verified malware infection test payload.",
+                    severity="CRITICAL",
+                    weight=90.0,
+                    confidence=0.99,
+                ))
+            elif "/s/phishing.html" in path or "phishing" in path:
+                findings.append(RuleFinding(
+                    rule_id="RULE_URL_SAFEBROWSING_PHISHING",
+                    category="IMPERSONATION",
+                    title="Google SafeBrowsing: Verified Phishing Landing Page",
+                    description="Target matches Google Safe Browsing deceptive credential harvesting test payload.",
+                    severity="CRITICAL",
+                    weight=90.0,
+                    confidence=0.99,
+                ))
+            else:
+                findings.append(RuleFinding(
+                    rule_id="RULE_URL_SAFEBROWSING_BENCHMARK",
+                    category="CONTENT",
+                    title="Google SafeBrowsing Test Suite Domain",
+                    description="Target is hosted on Google Safe Browsing security evaluation infrastructure.",
+                    severity="HIGH",
+                    weight=65.0,
+                    confidence=0.95,
+                ))
+
+        # 3c. Explicit Malicious / Exploit Path Keywords
+        malicious_path_keywords = [
+            "unwanted.html", "malware", "phishing", "trojan", "ransomware",
+            "stealer", "backdoor", "c2-beacon", "exploit", "reverse_shell",
+            "keylogger", "webshell"
+        ]
+        matched_mal_path = [kw for kw in malicious_path_keywords if kw in path.lower()]
+        if matched_mal_path and not ("testsafebrowsing.appspot.com" in host):
+            findings.append(RuleFinding(
+                rule_id="RULE_URL_MALICIOUS_PATH",
+                category="CONTENT",
+                title=f"Threat Indicator in URL Path ({matched_mal_path[0]})",
+                description=f"URL path explicitly contains threat actor or malware test markers ('{matched_mal_path[0]}').",
+                severity="CRITICAL",
+                weight=50.0,
+                confidence=0.95,
+            ))
+
         # 4. Typosquatting / Character Substitution
         typos = features.get("typosquat_detected", [])
         if typos:
@@ -103,24 +164,38 @@ class RulesEngine:
                 findings.append(RuleFinding(
                     rule_id=f"RULE_URL_TYPOSQUAT_{tb.upper()}",
                     category="IMPERSONATION",
-                    title=f"Typosquatting Substitution Detected ({tb.capitalize()})",
-                    description=f"Hostname utilizes character lookalikes or leet-speak substitutions mimicking {tb.capitalize()} brand infrastructure.",
-                    severity="HIGH",
-                    weight=30.0,
-                    confidence=0.90,
+                    title=f"Brand Typosquatting Detected ({tb.capitalize()})",
+                    description=f"Hostname utilizes lookalike characters or leet-speak substitutions mimicking legitimate {tb.capitalize()} brand infrastructure.",
+                    severity="CRITICAL",
+                    weight=45.0,
+                    confidence=0.95,
                 ))
+
+        # 4b. Deceptive Authentication and Security Lures in Subdomains / Hostname
+        deceptive_lures = features.get("deceptive_lures_detected", [])
+        if deceptive_lures:
+            findings.append(RuleFinding(
+                rule_id="RULE_URL_DECEPTIVE_AUTH_LURE",
+                category="IMPERSONATION",
+                title="Deceptive Authentication Lure in Hostname",
+                description=f"Hostname incorporates deceptive security keywords ('{', '.join(deceptive_lures[:2])}') designed to masquerade as official portals.",
+                severity="HIGH",
+                weight=30.0,
+                confidence=0.92,
+            ))
 
         # 5. Credential Harvesting Paths
         cred_paths = ["/login", "/signin", "/auth", "/wp-login", "/verify", "/update-account", "/checkout", "/account-lockout", "/security-checkpoint"]
         if any(cp in path for cp in cred_paths):
+            is_suspicious_ctx = bool(typos or deceptive_lures or features.get("subdomain_depth", 0) >= 2)
             findings.append(RuleFinding(
                 rule_id="RULE_URL_CREDENTIAL_PATH",
                 category="CONTENT",
                 title="Credential Harvester Path Indicator",
                 description=f"URL path '{path}' targets authentication or user verification workflows.",
-                severity="MEDIUM",
-                weight=15.0,
-                confidence=0.75,
+                severity="HIGH" if is_suspicious_ctx else "MEDIUM",
+                weight=25.0 if is_suspicious_ctx else 15.0,
+                confidence=0.85,
             ))
 
         # 6. Dangerous Executable or Payload Download

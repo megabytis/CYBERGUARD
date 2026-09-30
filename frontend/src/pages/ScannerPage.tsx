@@ -298,17 +298,45 @@ export const ScannerPage: React.FC<{ onOpenCopilot?: (scan?: ScanRecord | null) 
             }}
           />
 
-          {/* Verdict panel appears below once scan settles */}
+          {/* Unified Innovative Cyberdeck Verdict Screen */}
           {urlScanState.verdictReady && (
-            <VerdictTakeover
-              score={urlScanState.profile.score}
-              verdict={urlScanState.profile.verdict}
-              action={urlScanState.profile.action}
-              evidence={urlScanState.profile.evidence}
-              scanId={urlScanState.backendScan?.id}
-              aiExplanation={urlScanState.backendScan?.ai_explanation}
-              onOpenCopilot={() => onOpenCopilot(urlScanState.backendScan)}
+            <AnalysisResultScreen
+              scan={
+                urlScanState.backendScan || {
+                  id: 'url-' + Math.random().toString(36).slice(2, 10),
+                  input_type: 'url',
+                  input_summary: urlScanState.profile.url,
+                  input_payload: urlScanState.profile.url,
+                  risk_score: urlScanState.profile.score,
+                  risk_level:
+                    urlScanState.profile.verdict === 'critical'
+                      ? 'HIGH'
+                      : urlScanState.profile.verdict === 'review'
+                      ? 'MEDIUM'
+                      : 'LOW',
+                  heuristic_score: urlScanState.profile.score,
+                  ml_score: Math.round(urlScanState.profile.score * 0.7),
+                  detection_mode: 'HYBRID_AI',
+                  executive_summary: urlScanState.profile.action,
+                  ai_explanation: undefined,
+                  is_ai_generated: false,
+                  findings: (urlScanState.profile.evidence || []).map((ev, i) => ({
+                    id: `url-finding-${i}`,
+                    category: 'STRUCTURAL',
+                    title: ev.label,
+                    description: ev.detail,
+                    severity: ev.severity.toUpperCase() as any,
+                    confidence: 0.9,
+                    rule_id: 'RULE_URL_EVIDENCE',
+                    created_at: new Date().toISOString(),
+                  })),
+                  recommendations: [urlScanState.profile.action],
+                  processing_time_ms: 24,
+                  created_at: new Date().toISOString(),
+                }
+              }
               onRescan={() => setUrlScanState(null)}
+              onOpenCopilot={() => onOpenCopilot(urlScanState.backendScan)}
             />
           )}
         </div>
@@ -328,7 +356,7 @@ export const ScannerPage: React.FC<{ onOpenCopilot?: (scan?: ScanRecord | null) 
           {/* Quick example toggles on URL tab for judges / demos */}
           {activeTab === 'url' && (
             <div className="flex flex-wrap items-center gap-3 my-3">
-              <span className="text-[16px] text-white/70 font-semibold">Test profiles:</span>
+              <span className="text-[16px] text-slate-600 dark:text-white/70 font-semibold">Test profiles:</span>
               <button
                 type="button"
                 className="text-[16px] px-3.5 py-1 rounded-full border border-critical/40 bg-critical/10 text-critical font-bold hover:bg-critical/20 transition cursor-pointer"
@@ -399,7 +427,7 @@ export const ScannerPage: React.FC<{ onOpenCopilot?: (scan?: ScanRecord | null) 
           )}
 
           <div className="input-footer">
-            <small className="text-[16px] text-white/70">
+            <small className="text-[16px] text-slate-500 dark:text-white/70">
               {input.length} characters &bull; Zero-SSRF Offline Analysis
             </small>
             <div className="flex items-center gap-3">

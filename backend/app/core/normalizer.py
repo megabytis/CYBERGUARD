@@ -21,7 +21,8 @@ class Normalizer:
     }
 
     TYPOSQUAT_MAP = {
-        "0": "o", "1": "l", "l": "1", "i": "l", "vv": "w", "rn": "m", "5": "s"
+        "0": "o", "1": "l", "!": "i", "|": "l", "3": "e", "4": "a",
+        "@": "a", "5": "s", "$": "s", "7": "t", "8": "b", "vv": "w", "rn": "m"
     }
 
     DANGEROUS_EXTENSIONS = {
@@ -112,14 +113,40 @@ class Normalizer:
 
         # Check typosquatting against target brands
         typosquat_detected = []
-        host_normalized = host
+        host_lower = host.lower()
+        host_normalized = host_lower
         for k, v in cls.TYPOSQUAT_MAP.items():
             host_normalized = host_normalized.replace(k, v)
 
+        # Token-based leet extraction across dots and hyphens
+        host_tokens = re.split(r'[\.\-]+', host_lower)
+        normalized_tokens = [
+            "".join(cls.TYPOSQUAT_MAP.get(ch, ch) for ch in tok)
+            for tok in host_tokens
+        ]
+
         for brand in cls.TARGET_BRANDS:
-            # If the brand appears when leet-speak is normalized, but wasn't exact brand domain
-            if brand in host_normalized and brand not in root_domain:
-                typosquat_detected.append(brand)
+            # Check if brand appears in normalized host or tokens, but root domain is not official brand domain
+            is_official = (
+                root_domain == f"{brand}.com"
+                or root_domain == f"{brand}.org"
+                or root_domain == f"{brand}.net"
+                or root_domain == f"{brand}.gov"
+            )
+            if not is_official:
+                if (brand in host_normalized or any(brand in nt for nt in normalized_tokens)) and brand not in typosquat_detected:
+                    typosquat_detected.append(brand)
+
+        # Deceptive security and authentication lure keywords in host/subdomains
+        auth_lure_keywords = [
+            "verify-account", "account-verify", "secure-login", "login-verify",
+            "verify", "verification", "security", "secure", "account",
+            "signin", "auth", "checkpoint", "update-billing", "wp-login"
+        ]
+        deceptive_lures_detected = [
+            kw for kw in auth_lure_keywords
+            if kw in host_lower and not any(host_lower.endswith(f"{b}.com") for b in cls.TARGET_BRANDS)
+        ]
 
         return {
             "raw_input": raw_url,
@@ -143,6 +170,7 @@ class Normalizer:
             "has_dangerous_extension": has_dangerous_ext,
             "cred_params_present": cred_params_present,
             "typosquat_detected": typosquat_detected,
+            "deceptive_lures_detected": deceptive_lures_detected,
             "total_length": len(cleaned),
         }
 

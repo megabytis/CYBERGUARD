@@ -101,7 +101,7 @@ export const SettingsPage: React.FC = () => {
               <div>
                 <span>Enable Server-Side AI Explanations</span>
                 <small style={{ display: 'block', color: '#718590', fontSize: '11px', marginTop: '2px' }}>
-                  Groq LLM narrative synthesis
+                  Automated AI narrative synthesis
                 </small>
               </div>
               <input
@@ -115,7 +115,7 @@ export const SettingsPage: React.FC = () => {
 
             <div style={{ marginTop: '8px' }}>
               <span className="text-xs font-mono text-[#718590] uppercase block mb-1.5">
-                Active Groq LLM Architecture
+                Neural Analysis Profile
               </span>
               <select
                 value={prefs.groq_model}
@@ -126,9 +126,9 @@ export const SettingsPage: React.FC = () => {
                 className="text-input"
                 style={{ width: '100%', height: '42px', fontSize: '12px', borderRadius: '6px' }}
               >
-                <option value="llama-3.3-70b-versatile">llama-3.3-70b-versatile (Recommended)</option>
-                <option value="llama-3.1-8b-instant">llama-3.1-8b-instant (Ultra-low Latency)</option>
-                <option value="mixtral-8x7b-32768">mixtral-8x7b-32768</option>
+                <option value="llama-3.3-70b-versatile">High-Precision Neural Analysis (Recommended)</option>
+                <option value="llama-3.1-8b-instant">Ultra-Low Latency Mode</option>
+                <option value="mixtral-8x7b-32768">Balanced Enterprise Profile</option>
               </select>
             </div>
           </section>
