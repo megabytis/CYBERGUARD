@@ -63,17 +63,24 @@ class ThreatAnalyzer:
             findings = RulesEngine.evaluate_headers(metadata)
 
         elif input_type == "qr":
-            # Text extracted from QR code
-            metadata = {"qr_extracted_text": payload_clean}
-            input_summary = f"QR Payload: {payload_clean[:60]}..."
-            if payload_clean.startswith(("http://", "https://", "www.")):
-                url_meta = Normalizer.normalize_url(payload_clean)
-                metadata.update(url_meta)
-                findings = RulesEngine.evaluate_url(url_meta)
+            # Text or decoded image payload extracted from QR code
+            qr_meta = Normalizer.normalize_qr(payload_clean)
+            metadata = qr_meta
+            findings = RulesEngine.evaluate_qr(qr_meta)
+
+            # Smart human-readable telemetry summary
+            if qr_meta.get("is_dangerous_scheme"):
+                input_summary = f"QR Exploit Scheme: {payload_clean[:55]}..."
+            elif qr_meta.get("is_dynamic_qr_generator"):
+                input_summary = f"QR Quishing ({qr_meta.get('redirector_domain')}): {payload_clean[:50]}..."
+            elif qr_meta.get("is_wifi_lure"):
+                input_summary = f"QR Wi-Fi Config: SSID '{qr_meta.get('wifi_ssid')}'"
+            elif qr_meta.get("is_telecom_dispatch"):
+                input_summary = f"QR Telecom Dispatch: {qr_meta.get('telecom_target')}"
+            elif qr_meta.get("url_payload"):
+                input_summary = f"QR Destination: {qr_meta.get('url_payload')[:60]}"
             else:
-                msg_meta = Normalizer.normalize_message(payload_clean)
-                metadata.update(msg_meta)
-                findings = RulesEngine.evaluate_message(msg_meta)
+                input_summary = f"QR Payload: {payload_clean[:60]}..."
         else:
             raise ValueError(f"Unsupported scanner vector: '{input_type}'")
 
@@ -95,6 +102,8 @@ class ThreatAnalyzer:
         detection_mode = "HYBRID_LOCAL"
 
         if enable_ai and GroqAIClient.is_available():
+            provider_info = GroqAIClient.get_active_provider()
+            provider_label = provider_info[0].upper() if provider_info else "AI"
             ai_result = await GroqAIClient.generate_scan_explanation(
                 input_type=input_type,
                 risk_score=risk_score,
@@ -107,7 +116,7 @@ class ThreatAnalyzer:
             if ai_result:
                 exec_summary, markdown_narrative, recommendations = ai_result
                 is_ai_generated = True
-                detection_mode = "HYBRID_AI"
+                detection_mode = f"HYBRID_{provider_label}"
 
         # Fallback to local rule explanation if Groq disabled or unavailable
         if not is_ai_generated:

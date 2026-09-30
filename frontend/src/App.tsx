@@ -24,6 +24,7 @@ function AppRoutes() {
       <Route path="/app" element={<AppLayout />}>
         <Route index element={<Navigate to="/app/scanner" replace />} />
         <Route path="overview" element={<Navigate to="/app/scanner" replace />} />
+        <Route path="dashboard" element={<DashboardPage />} />
         <Route path="scanner" element={<ScannerPage onOpenCopilot={() => {}} />} />
         <Route path="intelligence" element={<IntelligencePage />} />
         <Route path="history" element={<HistoryPage />} />

@@ -1,0 +1,10 @@
+- fix dashboard first
+- check all APIs r working properly or not 
+- fix any type of UI bug 
+- add groq api or deepseek 
+- from qr it 
+
+wifi pass : 9583220552
+
+sl.no. 9
+

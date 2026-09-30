@@ -14,6 +14,8 @@ services:
       - SECRET_KEY=cyberguard-enterprise-secret-key-32-chars-long-soc-2026
       - DEMO_ADMIN_EMAIL=${DEMO_ADMIN_EMAIL:-analyst@cyberguard.internal}
       - DEMO_ADMIN_PASSWORD=${DEMO_ADMIN_PASSWORD:-CyberGuard2026!SecOps}
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY:-}
+      - DEEPSEEK_MODEL=${DEEPSEEK_MODEL:-deepseek-flash}
       - GROQ_API_KEY=${GROQ_API_KEY:-}
       - GROQ_MODEL=${GROQ_MODEL:-llama-3.3-70b-versatile}
     volumes:

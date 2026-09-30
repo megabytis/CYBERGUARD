@@ -694,3 +694,91 @@ class RulesEngine:
 
         return findings
 
+    @classmethod
+    def evaluate_qr(cls, features: Dict[str, Any]) -> List[RuleFinding]:
+        """Evaluates security heuristics for QR code payloads (Quishing, rogue Wi-Fi, telecom scams, exploits)."""
+        findings: List[RuleFinding] = []
+
+        # 1. Dangerous Protocol Execution Scheme
+        if features.get("is_dangerous_scheme"):
+            findings.append(RuleFinding(
+                rule_id="RULE_QR_DANGEROUS_SCHEME",
+                category="EXPLOITATION",
+                title="Dangerous Protocol Execution Scheme in QR Payload",
+                description="QR code attempts to execute an exploit-prone or local application protocol (intent://, data:, javascript:, file://). Attackers leverage custom scheme invocation to trigger local mobile application flaws or execute unauthorized system commands.",
+                severity="CRITICAL",
+                weight=65.0,
+                confidence=0.98,
+            ))
+
+        # 2. Dynamic QR Redirection (Quishing Infrastructure)
+        if features.get("is_dynamic_qr_generator"):
+            redirector = features.get("redirector_domain", "Dynamic QR Service")
+            has_credential_intent = False
+            if features.get("url_features"):
+                uf = features["url_features"]
+                path_lower = uf.get("path", "").lower()
+                query_lower = uf.get("query", "").lower()
+                has_credential_intent = any(k in path_lower or k in query_lower for k in ["login", "verify", "auth", "account", "signin", "session"])
+
+            findings.append(RuleFinding(
+                rule_id="RULE_QR_DYNAMIC_REDIRECTOR",
+                category="QUISHING",
+                title=f"Quishing Dynamic QR Redirection ({redirector})",
+                description=f"QR payload utilizes dynamic redirection service '{redirector}'. Attackers systematically employ dynamic QR shorteners to conceal malicious destination URLs from security scanners and swap the final landing page after physical distribution.",
+                severity="HIGH" if has_credential_intent else "MEDIUM",
+                weight=35.0,
+                confidence=0.88,
+            ))
+
+        # 3. Rogue Wi-Fi Association Payload
+        if features.get("is_wifi_lure"):
+            ssid = features.get("wifi_ssid", "Unidentified")
+            nopass = features.get("wifi_nopass", False)
+            findings.append(RuleFinding(
+                rule_id="RULE_QR_ROGUE_WIFI_LURE",
+                category="TELECOM",
+                title=f"Automated Wi-Fi Association Payload (SSID: {ssid})",
+                description=f"QR code initiates automatic network association with Wi-Fi SSID '{ssid}' {'with no password protection' if nopass else ''}. Threat actors distribute physical QR stickers in public spaces (airports, transit, cafes) to conduct Evil Twin and Man-in-the-Middle (MitM) credential interception.",
+                severity="HIGH" if nopass or "free" in ssid.lower() else "MEDIUM",
+                weight=40.0 if nopass else 25.0,
+                confidence=0.85,
+            ))
+
+        # 4. Unsolicited Telecom / SMS Dispatch
+        if features.get("is_telecom_dispatch"):
+            target = features.get("telecom_target", "Outbound Destination")
+            findings.append(RuleFinding(
+                rule_id="RULE_QR_UNSOLICITED_TELECOM",
+                category="TELECOM",
+                title=f"Unsolicited Telecom Dispatch (Target: {target})",
+                description=f"QR code payload triggers immediate outbound SMS or phone call dispatch to '{target}'. Frequently utilized in smishing schemes to send victim-authenticated authorization codes or subscribe mobile numbers to premium-rate subscription billing.",
+                severity="MEDIUM",
+                weight=30.0,
+                confidence=0.82,
+            ))
+
+        # 5. Sensitive TOTP Authenticator Secret Exposure
+        if features.get("is_otp_leak"):
+            findings.append(RuleFinding(
+                rule_id="RULE_QR_OTP_SECRET_EXPOSURE",
+                category="CREDENTIALS",
+                title="Sensitive TOTP Authenticator Secret Exposure",
+                description="QR code exposes an unencrypted two-factor authentication (TOTP) seed. Anyone scanning this code can clone the one-time passcode generator and defeat MFA controls.",
+                severity="HIGH",
+                weight=45.0,
+                confidence=0.95,
+            ))
+
+        # 6. Evaluate underlying URL features if present
+        if features.get("url_features"):
+            url_findings = cls.evaluate_url(features["url_features"])
+            findings.extend(url_findings)
+
+        # 7. Evaluate underlying text features if present and no URL
+        if features.get("text_features") and not features.get("url_features"):
+            text_findings = cls.evaluate_message(features["text_features"])
+            findings.extend(text_findings)
+
+        return findings
+

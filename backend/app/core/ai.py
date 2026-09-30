@@ -10,13 +10,36 @@ from app.core.rules import RuleFinding
 logger = logging.getLogger("cyberguard.ai")
 
 class GroqAIClient:
-    """Server-side Groq Cloud LLM client with defensive prompt constraints and intelligent fallback."""
+    """Server-side LLM reasoning engine supporting DeepSeek Flash/Chat and Groq with intelligent fallback."""
 
-    GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
+    @classmethod
+    def get_active_provider(cls) -> Optional[Tuple[str, str, str, str]]:
+        """
+        Returns active provider tuple: (provider_name, api_endpoint, model_name, api_key)
+        Prioritizes DeepSeek if configured, with Groq fallback.
+        """
+        if settings.deepseek_api_key and settings.deepseek_api_key.strip():
+            endpoint = f"{settings.deepseek_base_url.rstrip('/')}/chat/completions"
+            raw_model = (settings.deepseek_model or "deepseek-chat").strip()
+            model_name = "deepseek-chat" if raw_model in ["deepseek-flash", "deepseek-chat", "default", ""] else raw_model
+            return (
+                "DeepSeek",
+                endpoint,
+                model_name,
+                settings.deepseek_api_key.strip(),
+            )
+        if settings.groq_api_key and settings.groq_api_key.strip():
+            return (
+                "Groq",
+                "https://api.groq.com/openai/v1/chat/completions",
+                settings.groq_model or "llama-3.3-70b-versatile",
+                settings.groq_api_key.strip(),
+            )
+        return None
 
     @classmethod
     def is_available(cls) -> bool:
-        return bool(settings.groq_api_key and settings.groq_api_key.strip())
+        return cls.get_active_provider() is not None
 
     @classmethod
     async def generate_scan_explanation(
@@ -30,11 +53,14 @@ class GroqAIClient:
         metadata: Dict[str, Any],
     ) -> Optional[Tuple[str, str, List[str]]]:
         """
-        Calls Groq LLM to generate an executive summary, markdown narrative, and response steps.
+        Calls DeepSeek or Groq LLM to generate an executive summary, markdown narrative, and response steps.
         Returns None on any network/API failure to trigger instant deterministic fallback.
         """
-        if not cls.is_available():
+        provider_info = cls.get_active_provider()
+        if not provider_info:
             return None
+
+        provider_name, endpoint, model_name, api_key = provider_info
 
         # Prepare strictly factual prompt context
         evidence_list = [
@@ -70,15 +96,15 @@ Provide a structured, professional defensive assessment.
 """
 
         try:
-            async with httpx.AsyncClient(timeout=8.0) as client:
+            async with httpx.AsyncClient(timeout=12.0) as client:
                 response = await client.post(
-                    cls.GROQ_API_URL,
+                    endpoint,
                     headers={
-                        "Authorization": f"Bearer {settings.groq_api_key.strip()}",
+                        "Authorization": f"Bearer {api_key}",
                         "Content-Type": "application/json",
                     },
                     json={
-                        "model": settings.groq_model,
+                        "model": model_name,
                         "messages": [
                             {"role": "system", "content": system_prompt},
                             {"role": "user", "content": user_content},
@@ -89,7 +115,7 @@ Provide a structured, professional defensive assessment.
                 )
 
                 if response.status_code != 200:
-                    logger.warning(f"Groq API returned non-200 status: {response.status_code}")
+                    logger.warning(f"{provider_name} API returned non-200 status: {response.status_code} ({response.text[:200]})")
                     return None
 
                 data = response.json()
@@ -105,7 +131,7 @@ Provide a structured, professional defensive assessment.
                 return None
 
         except Exception as e:
-            logger.warning(f"Groq API call failed or timed out: {e}. Falling back to deterministic rules.")
+            logger.warning(f"{provider_name} API call failed or timed out: {e}. Falling back to deterministic rules.")
             return None
 
     @classmethod
@@ -118,8 +144,10 @@ Provide a structured, professional defensive assessment.
         Handles interactive conversational Q&A in the AI Copilot drawer and page.
         Returns: (assistant_response_markdown, source_string)
         """
-        # If Groq is available, call LLaMA 3.3 70B
-        if cls.is_available():
+        provider_info = cls.get_active_provider()
+        if provider_info:
+            provider_name, endpoint, model_name, api_key = provider_info
+
             system_prompt = (
                 "You are CYBERGUARD's AI Security Copilot — an expert Tier-3 SOC analyst and defensive cybersecurity engineer. "
                 "Your mission is to help security analysts understand scan findings, explain forensic evidence, "
@@ -152,15 +180,15 @@ Provide a structured, professional defensive assessment.
             messages.append({"role": "user", "content": user_message})
 
             try:
-                async with httpx.AsyncClient(timeout=10.0) as client:
+                async with httpx.AsyncClient(timeout=14.0) as client:
                     response = await client.post(
-                        cls.GROQ_API_URL,
+                        endpoint,
                         headers={
-                            "Authorization": f"Bearer {settings.groq_api_key.strip()}",
+                            "Authorization": f"Bearer {api_key}",
                             "Content-Type": "application/json",
                         },
                         json={
-                            "model": settings.groq_model,
+                            "model": model_name,
                             "messages": messages,
                             "temperature": 0.3,
                             "max_tokens": 1200,
@@ -170,9 +198,9 @@ Provide a structured, professional defensive assessment.
                     if response.status_code == 200:
                         data = response.json()
                         assistant_text = data["choices"][0]["message"]["content"]
-                        return assistant_text, "GROQ_LLM"
+                        return assistant_text, f"{provider_name.upper()}_LLM"
             except Exception as e:
-                logger.warning(f"Copilot Groq call failed: {e}. Falling back to Local Copilot Engine.")
+                logger.warning(f"Copilot {provider_name} call failed: {e}. Falling back to Local Copilot Engine.")
 
         # High-intelligence local expert fallback (100% offline & reliable for hackathons)
         return cls._generate_local_copilot_reasoning(user_message, scan_context)

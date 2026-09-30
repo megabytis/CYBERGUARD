@@ -30,6 +30,13 @@ class Normalizer:
         ".iso", ".img", ".vhd", ".vhdx", ".zip", ".tar.gz", ".apk", ".dmg"
     }
 
+    DYNAMIC_QR_DOMAINS = {
+        "qrco.de", "qrfy.com", "me-qr.com", "flowcode.com", "qr-code-generator.com",
+        "scanova.io", "beaconstac.com", "uniqode.com", "qr.io", "qr-creator.com",
+        "qr.net", "kaywa.com", "bit.ly", "tinyurl.com", "cutt.ly", "is.gd",
+        "rb.gy", "t.co", "ow.ly", "v.gd", "linktr.ee"
+    }
+
     @classmethod
     def normalize_url(cls, raw_url: str) -> Dict[str, Any]:
         """Parses and extracts static lexical and structural features from a URL."""
@@ -438,4 +445,89 @@ class Normalizer:
             "spf_fail": spf_fail,
             "dkim_fail": dkim_fail,
             "dmarc_fail": dmarc_fail,
+        }
+
+    @classmethod
+    def normalize_qr(cls, raw_text: str) -> Dict[str, Any]:
+        """Dissects QR code payload into specialized telemetry: URL, Wi-Fi, Telecom, Auth, or Exploit."""
+        cleaned = raw_text.strip()
+        lower = cleaned.lower()
+
+        qr_type = "text"
+        is_dangerous_scheme = False
+        is_dynamic_qr_generator = False
+        redirector_domain = None
+        is_wifi_lure = False
+        wifi_ssid = None
+        wifi_nopass = False
+        is_telecom_dispatch = False
+        telecom_target = None
+        is_otp_leak = False
+        url_payload = None
+        url_features = None
+
+        # 1. Dangerous scheme checks
+        if any(lower.startswith(scheme) for scheme in ["intent://", "data:", "javascript:", "file://", "ms-appinstaller:"]):
+            qr_type = "dangerous_scheme"
+            is_dangerous_scheme = True
+
+        # 2. Wi-Fi Configuration
+        elif lower.startswith("wifi:"):
+            qr_type = "wifi"
+            is_wifi_lure = True
+            ssid_match = re.search(r's:([^;]+)', cleaned, re.IGNORECASE)
+            wifi_ssid = ssid_match.group(1) if ssid_match else "Unknown"
+            if "t:nopass" in lower or ";p:;" in lower or not re.search(r'p:[^;]+', cleaned, re.IGNORECASE):
+                wifi_nopass = True
+
+        # 3. Telecom / SMS / Call dispatch
+        elif any(lower.startswith(prefix) for prefix in ["smsto:", "sms:", "tel:", "mmsto:"]):
+            qr_type = "telecom"
+            is_telecom_dispatch = True
+            parts = cleaned.split(":", 2)
+            telecom_target = parts[1] if len(parts) > 1 else cleaned
+
+        # 4. OTP Auth secret exposure
+        elif lower.startswith("otpauth://"):
+            qr_type = "otp"
+            is_otp_leak = True
+
+        # 5. URL or Domain Payload (with or without http:// or https://)
+        url_match = re.search(r'(https?://[^\s]+|[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(?:/[^\s]*)?)', cleaned)
+        if url_match and not is_dangerous_scheme and not is_wifi_lure:
+            matched_url = url_match.group(1)
+            # Ensure scheme
+            if not re.match(r'^[a-zA-Z]+://', matched_url):
+                matched_url = "https://" + matched_url
+            url_payload = matched_url
+            url_features = cls.normalize_url(matched_url)
+            qr_type = "url"
+
+            # Check if host is a known dynamic QR generator / shortener
+            host = url_features.get("host", "").lower()
+            root_domain = url_features.get("root_domain", host).lower()
+            for dq in cls.DYNAMIC_QR_DOMAINS:
+                if host == dq or host.endswith("." + dq) or root_domain == dq:
+                    is_dynamic_qr_generator = True
+                    redirector_domain = dq
+                    break
+
+        # 6. Fallback or Supplementary Text Normalization
+        text_features = cls.normalize_message(cleaned)
+
+        return {
+            "qr_type": qr_type,
+            "raw_payload": cleaned,
+            "is_dangerous_scheme": is_dangerous_scheme,
+            "is_dynamic_qr_generator": is_dynamic_qr_generator,
+            "redirector_domain": redirector_domain,
+            "is_wifi_lure": is_wifi_lure,
+            "wifi_ssid": wifi_ssid,
+            "wifi_nopass": wifi_nopass,
+            "is_telecom_dispatch": is_telecom_dispatch,
+            "telecom_target": telecom_target,
+            "is_otp_leak": is_otp_leak,
+            "url_payload": url_payload,
+            "url_features": url_features,
+            "text_features": text_features,
         }
