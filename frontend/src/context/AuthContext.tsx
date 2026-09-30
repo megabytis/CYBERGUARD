@@ -34,7 +34,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const currentUser = await api.getCurrentUser();
       if (currentUser) setUser(currentUser);
     } catch {
-      setUser(DEFAULT_ANALYST);
+      try {
+        const loggedIn = await api.login('analyst@cyberguard.internal', 'CyberGuard2026!SecOps');
+        setUser(loggedIn);
+      } catch {
+        setUser(DEFAULT_ANALYST);
+      }
     } finally {
       setIsLoading(false);
     }

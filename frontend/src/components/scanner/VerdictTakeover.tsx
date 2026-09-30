@@ -12,6 +12,7 @@ import {
 import { GlassButton } from '@/components/ui/GlassButton';
 import { GlassBadge } from '@/components/ui/GlassBadge';
 import { RollingNumber } from '@/components/ui/RollingNumber';
+import { ForensicNarrative } from './ForensicNarrative';
 import type { Evidence, Verdict } from './types';
 
 type VerdictTakeoverProps = {
@@ -74,12 +75,9 @@ export const VerdictTakeover: React.FC<VerdictTakeoverProps> = ({
 
   return (
     <motion.section
-      className="relative overflow-hidden rounded-[24px] border p-6 md:p-8 backdrop-blur-xl transition-colors duration-500"
+      className="relative overflow-hidden rounded-[24px] border border-cyan-500/25 dark:border-white/15 p-6 md:p-8 backdrop-blur-xl transition-colors duration-500 shadow-[0_10px_35px_-8px_rgba(8,145,178,0.12),0_0_2px_1px_rgba(8,145,178,0.15)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_20px_60px_rgba(0,0,0,0.35)]"
       style={{
         backgroundColor: config.tint,
-        borderColor: 'rgba(255, 255, 255, 0.14)',
-        boxShadow:
-          'inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 20px 60px rgba(0, 0, 0, 0.35)',
       }}
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
@@ -110,17 +108,17 @@ export const VerdictTakeover: React.FC<VerdictTakeoverProps> = ({
               duration={700}
               className="score-display font-mono font-black"
             />
-            <span className="mb-2 text-xl font-bold text-white/50">/ 100</span>
+            <span className="mb-2 text-xl font-bold text-slate-500 dark:text-white/50">/ 100</span>
           </div>
 
           <div className="flex items-center gap-3 mt-1">
             <Icon size={30} className={config.textColor} aria-hidden="true" />
-            <h2 className="text-3xl md:text-4xl font-extrabold tracking-wide text-white">
+            <h2 className="text-3xl md:text-4xl font-extrabold tracking-wide text-slate-950 dark:text-white">
               {config.label}
             </h2>
           </div>
 
-          <p className="mt-3 max-w-xl text-sm md:text-base font-normal leading-relaxed text-white/80">
+          <p className="mt-3 max-w-xl text-sm md:text-base font-normal leading-relaxed text-slate-700 dark:text-white/80">
             {action}
           </p>
 
@@ -141,7 +139,7 @@ export const VerdictTakeover: React.FC<VerdictTakeoverProps> = ({
                 variant="secondary"
                 size="md"
                 onClick={() => window.open(`/api/reports/download/${scanId}`, '_blank')}
-                className="text-sm font-semibold text-white/85 hover:text-white"
+                className="text-sm font-semibold text-slate-800 dark:text-white/85 hover:text-cyan-700 dark:hover:text-white"
               >
                 <Download size={16} className="mr-1.5" />
                 Download PDF
@@ -153,7 +151,7 @@ export const VerdictTakeover: React.FC<VerdictTakeoverProps> = ({
                 variant="secondary"
                 size="md"
                 onClick={onRescan}
-                className="text-sm font-semibold text-white/85 hover:text-white"
+                className="text-sm font-semibold text-slate-800 dark:text-white/85 hover:text-cyan-700 dark:hover:text-white"
               >
                 <RotateCcw size={16} className="mr-1.5" />
                 New Scan
@@ -163,13 +161,13 @@ export const VerdictTakeover: React.FC<VerdictTakeoverProps> = ({
         </div>
 
         {/* Right Column: Evidence Findings */}
-        <div className="rounded-2xl border border-white/10 bg-black/40 p-5 md:p-6 backdrop-blur-md">
+        <div className="rounded-2xl border border-cyan/20 dark:border-white/10 bg-white/95 dark:bg-black/40 p-5 md:p-6 backdrop-blur-md shadow-[0_4px_24px_rgba(8,145,178,0.10)] dark:shadow-none">
           <div className="mb-4 flex items-center justify-between">
-            <div className="flex items-center gap-2.5 text-base md:text-lg font-bold text-white">
+            <div className="flex items-center gap-2.5 text-base md:text-lg font-bold text-slate-900 dark:text-white">
               <span className={`h-2.5 w-2.5 rounded-full ${config.dotClass}`} aria-hidden="true" />
               Why this verdict
             </div>
-            <span className="font-mono text-xs font-semibold text-white/60">
+            <span className="font-mono text-xs font-semibold text-slate-600 dark:text-white/60">
               {evidence.length} Indicators
             </span>
           </div>
@@ -180,7 +178,7 @@ export const VerdictTakeover: React.FC<VerdictTakeoverProps> = ({
               return (
                 <motion.div
                   key={item.label}
-                  className="flex gap-3 items-start p-3 rounded-xl bg-white/[0.02] border border-white/5"
+                  className="flex gap-3 items-start p-3 rounded-xl bg-slate-50/80 dark:bg-white/[0.02] border border-slate-200/70 dark:border-white/5"
                   initial={{ opacity: 0, x: 10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: reduceMotion ? 0 : 0.15 + index * 0.1 }}
@@ -192,7 +190,7 @@ export const VerdictTakeover: React.FC<VerdictTakeoverProps> = ({
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="text-sm md:text-base font-bold text-white">{item.label}</h3>
+                      <h3 className="text-sm md:text-base font-bold text-slate-900 dark:text-white">{item.label}</h3>
                       <GlassBadge
                         variant={itemConfig.badgeVariant}
                         size="sm"
@@ -201,7 +199,7 @@ export const VerdictTakeover: React.FC<VerdictTakeoverProps> = ({
                         {item.severity}
                       </GlassBadge>
                     </div>
-                    <p className="mt-1 text-xs md:text-sm leading-relaxed text-white/70">
+                    <p className="mt-1 text-xs md:text-sm leading-relaxed text-slate-600 dark:text-white/70">
                       {item.detail}
                     </p>
                   </div>
@@ -212,17 +210,15 @@ export const VerdictTakeover: React.FC<VerdictTakeoverProps> = ({
         </div>
       </div>
 
-      {/* Expandable Forensic Narrative if generated */}
-      {aiExplanation && (
-        <div className="mt-6 rounded-xl border border-information/20 bg-information/[0.03] p-5 backdrop-blur-md">
-          <div className="flex items-center gap-2 text-sm font-bold text-information mb-2">
-            <Sparkles size={16} /> Forensic AI Narrative
-          </div>
-          <div className="text-sm leading-relaxed text-white/80 whitespace-pre-line font-sans">
-            {aiExplanation}
-          </div>
-        </div>
-      )}
+      {/* Forensic AI Narrative Panel */}
+      <ForensicNarrative
+        narrative={aiExplanation}
+        score={score}
+        verdict={verdict}
+        evidence={evidence}
+        onOpenCopilot={onOpenCopilot}
+        className="mt-6"
+      />
     </motion.section>
   );
 };

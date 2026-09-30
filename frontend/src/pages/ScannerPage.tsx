@@ -273,9 +273,9 @@ export const ScannerPage: React.FC<{ onOpenCopilot?: (scan?: ScanRecord | null) 
       {activeTab === 'url' && urlScanState?.active ? (
         <div className="space-y-6 animate-in fade-in duration-300">
           <div className="flex items-center justify-between pb-1">
-            <div className="flex items-center gap-2 font-mono text-[16px] text-white/80">
-              <span className="text-white/70">Scanning Target:</span>
-              <span className="font-bold text-white truncate max-w-xl">
+            <div className="flex items-center gap-2 font-mono text-[16px] text-slate-700 dark:text-white/80">
+              <span className="text-slate-500 dark:text-white/70">Scanning Target:</span>
+              <span className="font-bold text-slate-950 dark:text-white truncate max-w-xl">
                 {urlScanState.profile.url}
               </span>
             </div>

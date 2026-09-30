@@ -94,14 +94,14 @@ export const XRayScanner: React.FC<XRayScannerProps> = ({
     <GlassPanel className="p-6 md:p-8 rounded-[28px] border-border" aria-label="URL analysis">
       <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 text-[16px] font-extrabold tracking-[0.18em] text-white">
+          <div className="flex items-center gap-2 text-[16px] font-extrabold tracking-[0.18em] text-cyan-700 dark:text-white">
             <ScanLine size={18} aria-hidden="true" /> LIVE X-RAY SCAN
           </div>
-          <h2 className="mt-3 text-2xl md:text-3xl font-bold tracking-tight text-white">
+          <h2 className="mt-3 text-2xl md:text-3xl font-bold tracking-tight text-slate-950 dark:text-white">
             Dissecting the destination
           </h2>
         </div>
-        <div className="rounded-full border border-white/15 bg-white/[0.06] px-4 py-2 font-mono text-[16px] font-semibold text-white/80">
+        <div className="rounded-full border border-cyan-500/20 dark:border-white/15 bg-cyan-50/80 dark:bg-white/[0.06] px-4 py-2 font-mono text-[16px] font-semibold text-cyan-900 dark:text-white/80 shadow-[0_0_12px_rgba(8,145,178,0.10)] dark:shadow-none">
           {segments.length} signals found
         </div>
       </div>
@@ -135,13 +135,13 @@ export const XRayScanner: React.FC<XRayScannerProps> = ({
                       className={`segment-block ${
                         settled
                           ? `${state.border} ${state.glow}`
-                          : 'border-white/70 shadow-[0_0_24px_rgba(255,255,255,0.14)]'
+                          : 'border-cyan-500/40 dark:border-white/70 shadow-[0_0_20px_rgba(8,145,178,0.18)] dark:shadow-[0_0_24px_rgba(255,255,255,0.14)]'
                       } ${state.text}`}
                     >
-                      <span className="mb-2 block text-[16px] font-sans uppercase font-bold tracking-[0.18em] text-white/70">
+                      <span className="mb-2 block text-[16px] font-sans uppercase font-bold tracking-[0.18em] text-slate-600 dark:text-white/70">
                         {segment.label}
                       </span>
-                      <span className="block truncate font-mono text-[clamp(1.4rem,2.5vw,2.1rem)] font-bold text-white">
+                      <span className="block truncate font-mono text-[clamp(1.4rem,2.5vw,2.1rem)] font-bold text-slate-950 dark:text-white">
                         {segment.value}
                       </span>
                       {settled && (
@@ -169,9 +169,9 @@ export const XRayScanner: React.FC<XRayScannerProps> = ({
         </div>
       </div>
 
-      <div className="rounded-2xl border border-white/10 bg-black/30 p-5 md:p-6">
-        <div className="mb-4 flex items-center gap-2 text-[16px] font-bold text-white/80">
-          <Cpu size={18} className="text-white" aria-hidden="true" /> Analysis pipeline
+      <div className="rounded-2xl border border-cyan-500/20 dark:border-white/10 bg-slate-50/80 dark:bg-black/30 p-5 md:p-6 shadow-[0_4px_20px_rgba(8,145,178,0.06)] dark:shadow-none">
+        <div className="mb-4 flex items-center gap-2 text-[16px] font-bold text-slate-900 dark:text-white/80">
+          <Cpu size={18} className="text-cyan-600 dark:text-white" aria-hidden="true" /> Analysis pipeline
         </div>
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
           {stages.map((stage, index) => {
@@ -190,11 +190,11 @@ export const XRayScanner: React.FC<XRayScannerProps> = ({
                   {done ? (
                     <Check size={18} aria-hidden="true" />
                   ) : (
-                    <span className="h-2 w-2 rounded-full bg-white/40" aria-hidden="true" />
+                    <span className="h-2 w-2 rounded-full bg-slate-400 dark:bg-white/40" aria-hidden="true" />
                   )}
                   {stage.label}
                 </span>
-                <span className="mt-1 block text-[16px] font-medium text-white/70">
+                <span className="mt-1 block text-[16px] font-medium text-slate-600 dark:text-white/70">
                   {stage.detail}
                 </span>
               </motion.div>

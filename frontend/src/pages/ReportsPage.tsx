@@ -16,6 +16,7 @@ import { GlassPanel } from '@/components/ui/GlassPanel';
 import { GlassButton } from '@/components/ui/GlassButton';
 import { GlassBadge } from '@/components/ui/GlassBadge';
 import { GlassModal } from '@/components/ui/GlassModal';
+import { ForensicNarrative } from '@/components/scanner/ForensicNarrative';
 import { api, ScanSummaryItem, ScanRecord } from '@/lib/api';
 
 export const ReportsPage: React.FC = () => {
@@ -335,16 +336,13 @@ export const ReportsPage: React.FC = () => {
             </div>
 
             {/* AI Explanation */}
-            {previewScan.ai_explanation && (
-              <div className="space-y-2">
-                <h3 className="text-xs font-mono uppercase tracking-wider text-information font-bold">
-                  AI Threat Analysis & Reasoning
-                </h3>
-                <div className="text-xs leading-relaxed text-text-secondary bg-surface-glass p-4 rounded-xl border border-information/30 whitespace-pre-wrap">
-                  {previewScan.ai_explanation}
-                </div>
-              </div>
-            )}
+            <ForensicNarrative
+              narrative={previewScan.ai_explanation}
+              score={previewScan.risk_score}
+              verdict={previewScan.risk_score >= 70 ? 'critical' : previewScan.risk_score >= 30 ? 'review' : 'safe'}
+              evidence={previewScan.findings}
+              target={previewScan.input_summary || previewScan.input_payload}
+            />
 
             {/* Recommendations */}
             <div className="space-y-2">

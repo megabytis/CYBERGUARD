@@ -33,32 +33,32 @@ html.dark {
 }
 
 html.light {
-  --background: #f8f9fa;
+  --background: #f8fafc;
   --background-secondary: #f1f5f9;
   --background-elevated: #ffffff;
   --surface: #ffffff;
-  --surface-glass: rgba(255, 255, 255, 0.96);
+  --surface-glass: rgba(255, 255, 255, 0.94);
   --surface-glass-elevated: #ffffff;
-  --surface-glass-hover: #f1f5f9;
+  --surface-glass-hover: #f0fdfa;
   --text-primary: #0f172a;
   --text-secondary: #334155;
   --text-muted: #64748b;
-  --border: rgba(15, 23, 42, 0.18);
-  --border-bright: rgba(5, 150, 105, 0.4);
-  --protected: #059669;
-  --information: #059669;
-  --suspicious: #ea580c;
+  --border: rgba(8, 145, 178, 0.22);
+  --border-bright: rgba(8, 145, 178, 0.50);
+  --protected: #16a34a;
+  --information: #0284c7;
+  --suspicious: #d97706;
   --critical: #dc2626;
 
   /* v0 Design System Tokens */
-  --ink: #f8f9fa;
+  --ink: #f8fafc;
   --muted-ink: #64748b;
-  --cyan: #059669;
-  --lime: #059669;
+  --cyan: #0284c7;
+  --lime: #16a34a;
   --panel: #ffffff;
-  --line: rgba(15, 23, 42, 0.15);
+  --line: rgba(8, 145, 178, 0.18);
   --red: #dc2626;
-  --amber: #ea580c;
+  --amber: #d97706;
 }
 
 @layer base {
@@ -2175,6 +2175,82 @@ html.light body {
   font-weight: 600;
 }
 
+/* Luminous Cyberpunk Light Theme Overrides */
+html.light .glass-panel {
+  background-color: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(8, 145, 178, 0.22);
+  box-shadow: 0 10px 30px -10px rgba(8, 145, 178, 0.12),
+              0 0 0 1px rgba(8, 145, 178, 0.08),
+              0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+html.light .glass-panel-elevated {
+  background-color: #ffffff;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(8, 145, 178, 0.35);
+  box-shadow: 0 16px 40px -12px rgba(8, 145, 178, 0.18),
+              0 0 20px 0 rgba(8, 145, 178, 0.12);
+}
+
+html.light .glass-card {
+  background-color: rgba(255, 255, 255, 0.90);
+  border: 1px solid rgba(8, 145, 178, 0.18);
+  box-shadow: 0 4px 16px -2px rgba(8, 145, 178, 0.08);
+}
+
+html.light .glass-card:hover {
+  background-color: #ffffff;
+  border-color: rgba(8, 145, 178, 0.45);
+  box-shadow: 0 8px 24px -4px rgba(8, 145, 178, 0.18),
+              0 0 14px rgba(8, 145, 178, 0.15);
+}
+
+html.light .glass-input {
+  background-color: #ffffff;
+  border: 1.5px solid rgba(8, 145, 178, 0.25);
+  color: #0f172a;
+}
+
+html.light .glass-input:focus {
+  border-color: var(--information);
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.18), 0 0 16px rgba(2, 132, 199, 0.20);
+}
+
+html.light .segment-block {
+  background: rgba(255, 255, 255, 0.94);
+  border-color: rgba(8, 145, 178, 0.25);
+  box-shadow: 0 4px 20px -2px rgba(8, 145, 178, 0.10);
+}
+
+html.light .scan-beam {
+  background: #0284c7;
+  box-shadow: 0 0 22px 8px rgba(2, 132, 199, 0.65);
+}
+
+html.light .stage-chip {
+  border: 1px solid rgba(8, 145, 178, 0.18);
+  background: rgba(255, 255, 255, 0.92);
+  color: #0f172a;
+  box-shadow: 0 2px 10px rgba(8, 145, 178, 0.05);
+}
+
+html.light .stage-chip-active {
+  border-color: #0284c7;
+  background: rgba(2, 132, 199, 0.08);
+  color: #0369a1;
+  box-shadow: 0 0 18px rgba(2, 132, 199, 0.22);
+}
+
+html.light .stage-chip-ai.stage-chip-active {
+  border-color: #0891b2;
+  background: rgba(8, 145, 178, 0.12);
+  color: #0e7490;
+  box-shadow: 0 0 22px rgba(8, 145, 178, 0.28);
+}
+
 html.light .landing {
   background-color: #f8f9fa;
   background-image: 
@@ -2980,9 +3056,16 @@ html.light .header-actions svg:hover {
 html.light .kpi,
 html.light .panel {
   background: #ffffff;
-  border: 2px solid #0f172a;
-  box-shadow: 3px 3px 0px #0f172a;
-  border-radius: 12px;
+  border: 1px solid rgba(8, 145, 178, 0.22);
+  box-shadow: 0 4px 20px -2px rgba(8, 145, 178, 0.08), 0 0 1px 1px rgba(8, 145, 178, 0.12);
+  border-radius: 16px;
+  transition: all 0.2s ease;
+}
+
+html.light .kpi:hover,
+html.light .panel:hover {
+  border-color: rgba(8, 145, 178, 0.45);
+  box-shadow: 0 8px 24px -4px rgba(8, 145, 178, 0.16), 0 0 12px rgba(8, 145, 178, 0.12);
 }
 
 html.light .kpi strong {
@@ -3095,13 +3178,15 @@ html.light .input-panel textarea {
   background: #ffffff;
   color: #0f172a;
   font-weight: 600;
-  border: 2px solid #0f172a;
+  border: 1.5px solid rgba(8, 145, 178, 0.25);
+  border-radius: 12px;
 }
 
 html.light .settings-card {
   background: #ffffff;
-  border: 2px solid #0f172a;
-  box-shadow: 3px 3px 0px #0f172a;
+  border: 1px solid rgba(8, 145, 178, 0.22);
+  box-shadow: 0 4px 20px -2px rgba(8, 145, 178, 0.08);
+  border-radius: 16px;
 }
 
 html.light .settings-card h2 {
@@ -3110,8 +3195,8 @@ html.light .settings-card h2 {
 }
 
 html.light .settings-card label {
-  background: #f8f9fa;
-  border: 1.5px solid rgba(15, 23, 42, 0.15);
+  background: #f8fafc;
+  border: 1px solid rgba(8, 145, 178, 0.18);
   color: #0f172a;
   font-weight: 700;
 }
@@ -3122,7 +3207,15 @@ html.light select {
   background: #ffffff;
   color: #0f172a;
   font-weight: 700;
-  border: 2px solid #0f172a;
+  border: 1.5px solid rgba(8, 145, 178, 0.25);
+  border-radius: 8px;
+}
+
+html.light .settings-card input.text-input:focus,
+html.light .settings-card select.text-input:focus,
+html.light select:focus {
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.18), 0 0 14px rgba(2, 132, 199, 0.2);
 }
 
 html.light select option {

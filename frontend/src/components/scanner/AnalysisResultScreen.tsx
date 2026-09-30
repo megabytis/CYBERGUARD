@@ -26,6 +26,7 @@ import { ScanRecord, api } from '@/lib/api';
 import { RollingNumber } from '@/components/ui/RollingNumber';
 import { GlassBadge } from '@/components/ui/GlassBadge';
 import { GlassButton } from '@/components/ui/GlassButton';
+import { ForensicNarrative } from './ForensicNarrative';
 
 interface AnalysisResultScreenProps {
   scan: ScanRecord;
@@ -171,12 +172,9 @@ export const AnalysisResultScreen: React.FC<AnalysisResultScreenProps> = ({
 
       {/* Main Takeover Hero Section */}
       <motion.section
-        className="relative overflow-hidden rounded-[28px] border p-6 md:p-10 backdrop-blur-xl transition-colors duration-700"
+        className="relative overflow-hidden rounded-[28px] border border-cyan-500/25 dark:border-white/15 p-6 md:p-10 backdrop-blur-xl transition-colors duration-700 shadow-[0_12px_40px_-8px_rgba(8,145,178,0.12),0_0_2px_1px_rgba(8,145,178,0.15)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_24px_80px_rgba(0,0,0,0.35)]"
         style={{
           backgroundColor: config.tint,
-          borderColor: 'rgba(255, 255, 255, 0.16)',
-          boxShadow:
-            'inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 24px 80px rgba(0, 0, 0, 0.35)',
         }}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -195,11 +193,11 @@ export const AnalysisResultScreen: React.FC<AnalysisResultScreenProps> = ({
           {/* Left Column: Score, Verdict & Incident Response CTA */}
           <div>
             <div className="flex flex-wrap items-center gap-3">
-              <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-xs font-mono font-bold text-white/90">
+              <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/20 text-xs font-mono font-bold text-slate-800 dark:text-white/90">
                 <VectorIcon className="w-3.5 h-3.5 text-cyan" />
                 {vector.label}
               </span>
-              <span className="text-xs font-mono text-white/50">
+              <span className="text-xs font-mono text-slate-500 dark:text-white/50">
                 REF #{scan.id.slice(0, 8)}
               </span>
             </div>
@@ -211,19 +209,19 @@ export const AnalysisResultScreen: React.FC<AnalysisResultScreenProps> = ({
                 duration={700}
                 className="score-display font-mono font-black"
               />
-              <span className="mb-2 text-xl font-bold text-white/50">/ 100</span>
+              <span className="mb-2 text-xl font-bold text-slate-500 dark:text-white/50">/ 100</span>
             </div>
 
             {/* Verdict Badge */}
             <div className="flex items-center gap-3 mt-1">
               <Icon size={30} className={config.textColor} aria-hidden="true" />
-              <h2 className="text-3xl md:text-4xl font-extrabold tracking-wide text-white">
+              <h2 className="text-3xl md:text-4xl font-extrabold tracking-wide text-slate-950 dark:text-white">
                 {config.label}
               </h2>
             </div>
 
             {/* Executive Statement */}
-            <p className="mt-3 max-w-xl text-sm md:text-base font-normal leading-relaxed text-white/80">
+            <p className="mt-3 max-w-xl text-sm md:text-base font-normal leading-relaxed text-slate-700 dark:text-white/80">
               {scan.executive_summary ||
                 (verdictKey === 'critical'
                   ? 'High-confidence defensive alerts detected. Immediate containment and isolation recommended.'
@@ -233,8 +231,8 @@ export const AnalysisResultScreen: React.FC<AnalysisResultScreenProps> = ({
             </p>
 
             {/* Ingestion Target Snippet */}
-            <div className="mt-3 p-2.5 rounded-lg bg-black/40 border border-white/10 max-w-xl font-mono text-xs text-white/70 truncate">
-              <span className="text-white/40 select-none mr-2">TARGET:</span>
+            <div className="mt-3 p-2.5 rounded-lg bg-slate-100 dark:bg-black/40 border border-slate-200 dark:border-white/10 max-w-xl font-mono text-xs text-slate-800 dark:text-white/70 truncate">
+              <span className="text-slate-500 dark:text-white/40 select-none mr-2">TARGET:</span>
               {scan.input_summary || scan.input_payload.slice(0, 70)}
             </div>
 
@@ -256,7 +254,7 @@ export const AnalysisResultScreen: React.FC<AnalysisResultScreenProps> = ({
                 size="md"
                 onClick={handleDownloadPDF}
                 disabled={isGeneratingPdf}
-                className="text-sm font-semibold text-white/85 hover:text-white"
+                className="text-sm font-semibold text-slate-800 dark:text-white/85 hover:text-cyan-700 dark:hover:text-white"
               >
                 <Download size={16} className="mr-1.5" />
                 {isGeneratingPdf ? 'Generating...' : 'Download PDF'}
@@ -266,7 +264,7 @@ export const AnalysisResultScreen: React.FC<AnalysisResultScreenProps> = ({
                 variant="secondary"
                 size="md"
                 onClick={onRescan}
-                className="text-sm font-semibold text-white/85 hover:text-white"
+                className="text-sm font-semibold text-slate-800 dark:text-white/85 hover:text-cyan-700 dark:hover:text-white"
               >
                 <RotateCcw size={16} className="mr-1.5" />
                 New Scan
@@ -275,13 +273,13 @@ export const AnalysisResultScreen: React.FC<AnalysisResultScreenProps> = ({
           </div>
 
           {/* Right Column: Evidence Findings */}
-          <div className="rounded-2xl border border-white/15 bg-black/40 p-6 md:p-7 backdrop-blur-md">
+          <div className="rounded-2xl border border-cyan/20 dark:border-white/15 bg-white/95 dark:bg-black/40 p-6 md:p-7 backdrop-blur-md shadow-[0_4px_24px_rgba(8,145,178,0.10)] dark:shadow-none">
             <div className="mb-6 flex items-center justify-between">
-              <div className="flex items-center gap-3 text-xl font-bold text-white">
+              <div className="flex items-center gap-3 text-xl font-bold text-slate-900 dark:text-white">
                 <span className={`h-3.5 w-3.5 rounded-full ${config.dotClass}`} />
                 Why this verdict
               </div>
-              <span className="font-mono text-[16px] font-semibold text-white/70">
+              <span className="font-mono text-[16px] font-semibold text-slate-600 dark:text-white/70">
                 {findingsList.length} Technical Indicators
               </span>
             </div>
@@ -300,7 +298,7 @@ export const AnalysisResultScreen: React.FC<AnalysisResultScreenProps> = ({
                   return (
                     <motion.div
                       key={index}
-                      className="p-3.5 rounded-xl border border-white/10 bg-white/[0.02] flex gap-3.5 items-start"
+                      className="p-3.5 rounded-xl border border-slate-200/80 dark:border-white/10 bg-slate-50/80 dark:bg-white/[0.02] flex gap-3.5 items-start"
                       initial={{ opacity: 0, x: 12 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: reduceMotion ? 0 : 0.1 + index * 0.08 }}
@@ -312,7 +310,7 @@ export const AnalysisResultScreen: React.FC<AnalysisResultScreenProps> = ({
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex flex-wrap items-center gap-2">
-                          <h3 className="text-[16px] font-bold text-white">{item.title}</h3>
+                          <h3 className="text-[16px] font-bold text-slate-900 dark:text-white">{item.title}</h3>
                           <GlassBadge
                             variant={itemConfig.badgeVariant}
                             size="sm"
@@ -321,7 +319,7 @@ export const AnalysisResultScreen: React.FC<AnalysisResultScreenProps> = ({
                             {item.severity}
                           </GlassBadge>
                         </div>
-                        <p className="mt-1 text-[15px] leading-relaxed text-white/75">
+                        <p className="mt-1 text-[15px] leading-relaxed text-slate-600 dark:text-white/75">
                           {item.description}
                         </p>
                       </div>
@@ -329,7 +327,7 @@ export const AnalysisResultScreen: React.FC<AnalysisResultScreenProps> = ({
                   );
                 })
               ) : (
-                <div className="py-10 text-center text-white/60 text-sm font-mono">
+                <div className="py-10 text-center text-slate-500 dark:text-white/60 text-sm font-mono">
                   No hostile indicators discovered. All heuristic checks and ML vectors passed cleanly.
                 </div>
               )}
@@ -338,45 +336,42 @@ export const AnalysisResultScreen: React.FC<AnalysisResultScreenProps> = ({
         </div>
 
         {/* Real Dynamic Telemetry Strip */}
-        <div className="mt-8 pt-6 border-t border-white/10 grid grid-cols-2 sm:grid-cols-4 gap-4 text-center font-mono">
-          <div className="p-3 rounded-xl bg-white/[0.03] border border-white/10">
-            <span className="text-xs text-white/50 block">HEURISTIC RULES</span>
-            <strong className="text-lg text-white font-bold">{heuristicScore}%</strong>
+        <div className="mt-8 pt-6 border-t border-slate-200 dark:border-white/10 grid grid-cols-2 sm:grid-cols-4 gap-4 text-center font-mono">
+          <div className="p-3 rounded-xl bg-white/80 dark:bg-white/[0.03] border border-slate-200/80 dark:border-white/10 shadow-sm dark:shadow-none">
+            <span className="text-xs text-slate-500 dark:text-white/50 block">HEURISTIC RULES</span>
+            <strong className="text-lg text-slate-900 dark:text-white font-bold">{heuristicScore}%</strong>
           </div>
-          <div className="p-3 rounded-xl bg-white/[0.03] border border-white/10">
-            <span className="text-xs text-white/50 block">STATISTICAL ML</span>
-            <strong className="text-lg text-white font-bold">{mlScore}%</strong>
+          <div className="p-3 rounded-xl bg-white/80 dark:bg-white/[0.03] border border-slate-200/80 dark:border-white/10 shadow-sm dark:shadow-none">
+            <span className="text-xs text-slate-500 dark:text-white/50 block">STATISTICAL ML</span>
+            <strong className="text-lg text-slate-900 dark:text-white font-bold">{mlScore}%</strong>
           </div>
-          <div className="p-3 rounded-xl bg-white/[0.03] border border-white/10">
-            <span className="text-xs text-white/50 block">PRECISION CONFIDENCE</span>
+          <div className="p-3 rounded-xl bg-white/80 dark:bg-white/[0.03] border border-slate-200/80 dark:border-white/10 shadow-sm dark:shadow-none">
+            <span className="text-xs text-slate-500 dark:text-white/50 block">PRECISION CONFIDENCE</span>
             <strong className="text-lg text-cyan font-bold">{computedConfidence}%</strong>
           </div>
-          <div className="p-3 rounded-xl bg-white/[0.03] border border-white/10">
-            <span className="text-xs text-white/50 block">PROCESSING LATENCY</span>
+          <div className="p-3 rounded-xl bg-white/80 dark:bg-white/[0.03] border border-slate-200/80 dark:border-white/10 shadow-sm dark:shadow-none">
+            <span className="text-xs text-slate-500 dark:text-white/50 block">PROCESSING LATENCY</span>
             <strong className="text-lg text-lime font-bold">{scan.processing_time_ms || 14}ms</strong>
           </div>
         </div>
       </motion.section>
 
       {/* Forensic AI Narrative Panel */}
-      {scan.ai_explanation && (
-        <section className="rounded-2xl border border-information/20 bg-information/[0.03] p-6 md:p-8 backdrop-blur-md">
-          <div className="flex items-center gap-2.5 text-[17px] font-bold text-information mb-4">
-            <Sparkles size={20} />
-            <h2>Forensic AI Security Narrative</h2>
-          </div>
-          <div className="text-[16px] leading-relaxed text-white/85 whitespace-pre-line font-sans space-y-3">
-            {scan.ai_explanation}
-          </div>
-        </section>
-      )}
+      <ForensicNarrative
+        narrative={scan.ai_explanation}
+        score={scan.risk_score}
+        verdict={verdictKey}
+        evidence={findingsList}
+        target={scan.input_summary || scan.input_payload}
+        onOpenCopilot={() => onOpenCopilot(scan)}
+      />
 
       {/* Response Playbook & Recommended Actions */}
-      <section className="rounded-2xl border border-white/15 bg-black/40 p-6 md:p-8 backdrop-blur-md">
+      <section className="rounded-2xl border border-cyan/20 dark:border-white/15 bg-white/95 dark:bg-black/40 p-6 md:p-8 backdrop-blur-md shadow-[0_4px_24px_rgba(8,145,178,0.10)] dark:shadow-none">
         <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
           <div>
             <div className="eyebrow">STANDARDIZED SOC MITIGATION WORKFLOW</div>
-            <h2 className="text-2xl font-bold text-white">Recommended Response Protocol</h2>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Recommended Response Protocol</h2>
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -387,13 +382,13 @@ export const AnalysisResultScreen: React.FC<AnalysisResultScreenProps> = ({
             </button>
             <button
               onClick={() => handleAction('SOC Incident Dossier Dispatched')}
-              className="px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white text-sm font-bold hover:bg-white/20 transition-colors"
+              className="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/20 border border-slate-300 dark:border-white/20 text-slate-800 dark:text-white text-sm font-bold transition-colors"
             >
               Dispatch Notice
             </button>
             <button
               onClick={handleExportJSON}
-              className="px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white text-sm font-bold hover:bg-white/20 transition-colors inline-flex items-center gap-1.5"
+              className="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/20 border border-slate-300 dark:border-white/20 text-slate-800 dark:text-white text-sm font-bold transition-colors inline-flex items-center gap-1.5"
             >
               <Share2 size={15} /> JSON
             </button>
@@ -404,10 +399,10 @@ export const AnalysisResultScreen: React.FC<AnalysisResultScreenProps> = ({
           {recommendationsList.map((rec, idx) => (
             <div
               key={idx}
-              className="p-4 rounded-xl border border-white/10 bg-white/[0.02] flex items-start gap-3"
+              className="p-4 rounded-xl border border-slate-200/80 dark:border-white/10 bg-slate-50/80 dark:bg-white/[0.02] flex items-start gap-3"
             >
               <CheckCircle2 className="w-5 h-5 text-lime shrink-0 mt-0.5" />
-              <span className="text-[15px] font-medium text-white/85 leading-relaxed">
+              <span className="text-[15px] font-medium text-slate-800 dark:text-white/85 leading-relaxed">
                 {rec}
               </span>
             </div>

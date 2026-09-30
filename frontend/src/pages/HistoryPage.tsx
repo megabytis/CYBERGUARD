@@ -20,6 +20,7 @@ import { GlassBadge } from '@/components/ui/GlassBadge';
 import { GlassDrawer } from '@/components/ui/GlassModal';
 import { RollingNumber } from '@/components/ui/RollingNumber';
 import { EvidenceStrengthBar } from '@/components/ui/RollingKPI';
+import { ForensicNarrative } from '@/components/scanner/ForensicNarrative';
 import { api, ScanSummaryItem, ScanRecord } from '@/lib/api';
 
 const RISK_FILTERS = [
@@ -495,16 +496,13 @@ export const HistoryPage: React.FC = () => {
             </div>
 
             {/* AI Explanation */}
-            {selectedScan.ai_explanation && (
-              <div className="space-y-2">
-                <h4 className="text-xs font-mono font-bold uppercase text-information">
-                  AI Threat Explanation
-                </h4>
-                <div className="text-xs text-text-secondary whitespace-pre-wrap leading-relaxed bg-surface-glass p-4 rounded-xl border border-information/30">
-                  {selectedScan.ai_explanation}
-                </div>
-              </div>
-            )}
+            <ForensicNarrative
+              narrative={selectedScan.ai_explanation}
+              score={selectedScan.risk_score}
+              verdict={selectedScan.risk_score >= 70 ? 'critical' : selectedScan.risk_score >= 30 ? 'review' : 'safe'}
+              evidence={selectedScan.findings}
+              target={selectedScan.input_summary || selectedScan.input_payload}
+            />
 
             {/* Recommended Responses */}
             <div className="space-y-2">
