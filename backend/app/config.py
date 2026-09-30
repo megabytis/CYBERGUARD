@@ -66,7 +66,7 @@ class Settings(BaseSettings):
 
     # DeepSeek AI Integration (Primary Fast LLM)
     deepseek_api_key: str = Field(default="", validation_alias="DEEPSEEK_API_KEY")
-    deepseek_model: str = Field(default="deepseek-flash", validation_alias="DEEPSEEK_MODEL")
+    deepseek_model: str = Field(default="deepseek-chat", validation_alias="DEEPSEEK_MODEL")
     deepseek_base_url: str = Field(default="https://api.deepseek.com", validation_alias="DEEPSEEK_BASE_URL")
 
     # Groq AI Integration (Alternative cloud fallback)

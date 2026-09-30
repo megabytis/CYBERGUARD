@@ -66,6 +66,20 @@ async def chat_with_copilot(
                 "recommendations": scan.recommendations or [],
             }
 
+    # Extract recent conversation history for multi-turn context
+    stmt_history = (
+        select(CopilotMessage)
+        .where(CopilotMessage.conversation_id == conversation.id)
+        .order_by(desc(CopilotMessage.created_at))
+        .limit(6)
+    )
+    past_rows = list(db.execute(stmt_history).scalars().all())
+    past_rows.reverse()
+    chat_history = [
+        {"role": ("assistant" if m.sender == "assistant" else "user"), "content": m.content}
+        for m in past_rows
+    ]
+
     # Save user message
     user_msg = CopilotMessage(
         conversation_id=conversation.id,
@@ -78,6 +92,7 @@ async def chat_with_copilot(
     assistant_text, source = await GroqAIClient.generate_copilot_response(
         user_message=payload.message,
         scan_context=scan_context,
+        chat_history=chat_history,
     )
 
     # Save assistant message
