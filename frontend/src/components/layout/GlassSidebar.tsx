@@ -4,7 +4,6 @@ import {
   BrainCircuit,
   Zap,
   FileText,
-  Sparkles,
   LockKeyhole,
 } from 'lucide-react';
 import { Logo } from './Logo';
@@ -48,13 +47,6 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({
 
       <div>
         <div className="side-bottom">
-          <NavLink
-            to="/app/copilot"
-            className={({ isActive }) => (isActive ? 'active' : '')}
-          >
-            <Sparkles className="w-4 h-4 shrink-0 text-cyan" />
-            <span>AI Copilot</span>
-          </NavLink>
           <NavLink
             to="/app/settings"
             className={({ isActive }) => (isActive ? 'active' : '')}

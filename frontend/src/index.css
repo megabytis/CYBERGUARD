@@ -2073,7 +2073,10 @@ html.light {
   height: 18px;
   accent-color: var(--cyan);
 }
-.settings-card input.text-input, .settings-card select.text-input, select {
+.text-input,
+.settings-card input.text-input,
+.settings-card select.text-input,
+select {
   border: 1px solid #263b44;
   background: #07141b;
   color: #e8f3f6;
@@ -2083,7 +2086,10 @@ html.light {
   font-size: 13px;
   font-family: inherit;
 }
-.settings-card input.text-input:focus, .settings-card select.text-input:focus, select:focus {
+.text-input:focus,
+.settings-card input.text-input:focus,
+.settings-card select.text-input:focus,
+select:focus {
   border-color: var(--cyan);
   box-shadow: 0 0 0 3px rgba(0,217,255,.15);
 }
@@ -3201,6 +3207,7 @@ html.light .settings-card label {
   font-weight: 700;
 }
 
+html.light .text-input,
 html.light .settings-card input.text-input,
 html.light .settings-card select.text-input,
 html.light select {
@@ -3211,6 +3218,7 @@ html.light select {
   border-radius: 8px;
 }
 
+html.light .text-input:focus,
 html.light .settings-card input.text-input:focus,
 html.light .settings-card select.text-input:focus,
 html.light select:focus {

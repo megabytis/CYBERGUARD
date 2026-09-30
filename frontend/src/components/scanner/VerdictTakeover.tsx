@@ -130,7 +130,7 @@ export const VerdictTakeover: React.FC<VerdictTakeoverProps> = ({
               aria-label="Ask AI Copilot for deep forensic explanation"
             >
               <Sparkles size={17} aria-hidden="true" />
-              Ask AI Copilot
+              Ask CYBERGUARD AI
               <ArrowRight size={17} aria-hidden="true" />
             </button>
 

@@ -156,7 +156,7 @@ export const GlassCommandPalette: React.FC<GlassCommandPaletteProps> = ({ onOpen
                   className="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer hover:bg-surface-glass-active text-text-primary transition-colors aria-selected:bg-information/20 aria-selected:text-information"
                 >
                   <Bot className="w-4 h-4 text-information" />
-                  <span className="text-base font-medium">Launch AI Security Copilot</span>
+                  <span className="text-base font-medium">Launch CYBERGUARD AI Chatbot</span>
                 </Command.Item>
               )}
             </Command.Group>

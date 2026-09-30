@@ -264,7 +264,7 @@ export const ForensicNarrative: React.FC<ForensicNarrativeProps> = ({
             onClick={onOpenCopilot}
             className="inline-flex items-center gap-2 rounded-xl border border-cyan-500/30 bg-cyan-50 hover:bg-cyan-100 dark:bg-information/15 dark:hover:bg-information/25 dark:border-information/50 px-3.5 py-1.5 text-xs font-mono font-bold text-cyan-800 dark:text-information transition-all shadow-sm dark:shadow-[0_0_14px_rgba(0,217,255,0.2)] active:scale-95 cursor-pointer"
           >
-            <span>Ask Copilot for Details</span>
+            <span>Ask CYBERGUARD AI</span>
             <ArrowRight size={14} />
           </button>
         )}

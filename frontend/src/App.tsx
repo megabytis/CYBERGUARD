@@ -10,7 +10,6 @@ import { HistoryPage } from '@/pages/HistoryPage';
 import { IntelligencePage } from '@/pages/IntelligencePage';
 import { ReportsPage } from '@/pages/ReportsPage';
 import { AnalyticsPage } from '@/pages/AnalyticsPage';
-import { AICopilotPage } from '@/pages/AICopilotPage';
 import { ProfilePage } from '@/pages/ProfilePage';
 import { SettingsPage } from '@/pages/SettingsPage';
 
@@ -30,7 +29,7 @@ function AppRoutes() {
         <Route path="history" element={<HistoryPage />} />
         <Route path="reports" element={<ReportsPage />} />
         <Route path="analytics" element={<AnalyticsPage />} />
-        <Route path="copilot" element={<AICopilotPage />} />
+        <Route path="copilot" element={<Navigate to="/app/scanner" replace />} />
         <Route path="profile" element={<Navigate to="/app/settings" replace />} />
         <Route path="settings" element={<SettingsPage />} />
       </Route>

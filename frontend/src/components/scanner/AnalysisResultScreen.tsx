@@ -245,7 +245,7 @@ export const AnalysisResultScreen: React.FC<AnalysisResultScreenProps> = ({
                 className="inline-flex items-center gap-2 rounded-xl border border-information/70 bg-information hover:bg-information/90 px-5 py-2.5 text-sm md:text-base font-bold text-[#08090C] transition-all hover:scale-[1.02] active:scale-[0.98] shadow-[0_0_20px_rgba(0,217,255,0.35)] focus:outline-none focus:ring-2 focus:ring-information"
               >
                 <Sparkles size={17} aria-hidden="true" />
-                Ask AI Copilot
+                Ask CYBERGUARD AI
                 <ArrowRight size={17} aria-hidden="true" />
               </button>
 

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { GlassNavbar } from './GlassNavbar';
 import { GlassSidebar } from './GlassSidebar';
-import { AIChatDrawer } from '@/components/copilot/AIChatDrawer';
+import { CyberGuardAIChatbot } from '@/components/copilot/CyberGuardAIChatbot';
 import { GlassCommandPalette } from '@/components/ui/GlassCommandPalette';
 import { ScanRecord } from '@/lib/api';
 
@@ -46,10 +46,11 @@ export const CyberGuardAppShell: React.FC = () => {
         </div>
       </main>
 
-      {/* Slide-over Copilot Drawer */}
-      <AIChatDrawer
+      {/* CYBERGUARD AI Chatbot Screen Pop-Up */}
+      <CyberGuardAIChatbot
         isOpen={isCopilotOpen}
         onClose={() => setIsCopilotOpen(false)}
+        onOpen={() => setIsCopilotOpen(true)}
         activeScan={activeScan}
       />
     </div>
