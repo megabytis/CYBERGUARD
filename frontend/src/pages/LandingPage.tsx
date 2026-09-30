@@ -414,9 +414,6 @@ export const LandingPage: React.FC = () => {
         </div>
         <div className="flex items-center gap-3">
           <ThemeToggle />
-          <Link className="nav-login" to="/app">
-            Security Console <ArrowRight />
-          </Link>
         </div>
       </nav>
 

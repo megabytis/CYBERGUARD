@@ -9,7 +9,6 @@ import {
   Share2,
   RotateCcw,
   ArrowLeft,
-  ArrowRight,
   Mail,
   MessageSquare,
   Globe,
@@ -373,19 +372,6 @@ export const AnalysisResultScreen: React.FC<AnalysisResultScreenProps> = ({
                   </strong>
                 </span>
               </div>
-            </div>
-
-            {/* Primary Action Button */}
-            <div className="pt-2">
-              <button
-                type="button"
-                onClick={() => onOpenCopilot(scan)}
-                className="inline-flex items-center gap-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white dark:bg-cyan dark:text-black px-5 py-2.5 text-sm font-bold transition-all shadow-md hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
-              >
-                <Sparkles size={16} />
-                Ask Copilot About Threat
-                <ArrowRight size={16} />
-              </button>
             </div>
           </div>
         </div>
