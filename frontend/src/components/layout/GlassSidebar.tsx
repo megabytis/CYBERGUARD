@@ -5,6 +5,7 @@ import {
   Zap,
   FileText,
   LockKeyhole,
+  X,
 } from 'lucide-react';
 import { Logo } from './Logo';
 
@@ -18,16 +19,31 @@ const navItems = [
 interface GlassSidebarProps {
   isCollapsed?: boolean;
   onOpenCopilot?: () => void;
+  onCloseMobile?: () => void;
 }
 
 export const GlassSidebar: React.FC<GlassSidebarProps> = ({
   isCollapsed,
   onOpenCopilot,
+  onCloseMobile,
 }) => {
   return (
     <aside className={isCollapsed ? 'collapsed' : ''}>
       <div>
-        <Logo />
+        <div className="flex items-center justify-between">
+          <Logo />
+          {onCloseMobile && (
+            <button
+              type="button"
+              onClick={onCloseMobile}
+              className="p-1.5 rounded-lg text-slate-400 hover:text-white dark:hover:text-cyan md:hidden cursor-pointer"
+              title="Close navigation"
+              aria-label="Close navigation"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
+        </div>
         <small className="console-label">SECURITY CONSOLE</small>
 
         <div className="side-nav">
@@ -36,6 +52,7 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({
               key={label}
               to={to}
               title={label}
+              onClick={onCloseMobile}
               className={({ isActive }) => (isActive ? 'active' : '')}
             >
               <Icon className="w-4 h-4 shrink-0" />
@@ -49,6 +66,7 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({
         <div className="side-bottom">
           <NavLink
             to="/app/settings"
+            onClick={onCloseMobile}
             className={({ isActive }) => (isActive ? 'active' : '')}
           >
             <LockKeyhole className="w-4 h-4 shrink-0" />

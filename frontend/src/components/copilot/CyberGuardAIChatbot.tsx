@@ -49,9 +49,14 @@ export const CyberGuardAIChatbot: React.FC<CyberGuardAIChatbotProps> = ({
   const [isMinimized, setIsMinimized] = useState(false);
   const [isMaximized, setIsMaximized] = useState(false);
   const [sizePreset, setSizePreset] = useState<SizePreset>('standard');
-  const [dimensions, setDimensions] = useState<{ width: number; height: number }>({
-    width: 480,
-    height: 640,
+  const [dimensions, setDimensions] = useState<{ width: number; height: number }>(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 640) {
+      return {
+        width: Math.min(window.innerWidth - 20, 390),
+        height: Math.min(window.innerHeight - 80, 540),
+      };
+    }
+    return { width: 480, height: 640 };
   });
 
   const [messages, setMessages] = useState<Message[]>([
@@ -333,12 +338,12 @@ export const CyberGuardAIChatbot: React.FC<CyberGuardAIChatbotProps> = ({
             dragListener={false}
             dragControls={dragControls}
             dragMomentum={false}
-            className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex flex-col rounded-2xl border border-cyan-500/35 dark:border-cyan-400/35 bg-white/95 dark:bg-[#080E16]/95 backdrop-blur-2xl shadow-[0_16px_50px_rgba(8,145,178,0.22),0_0_2px_1px_rgba(8,145,178,0.25)] dark:shadow-[0_0_45px_rgba(0,217,255,0.18),inset_0_1px_0_rgba(0,217,255,0.25)] overflow-hidden"
+            className="fixed bottom-2 right-2 sm:bottom-6 sm:right-6 z-50 flex flex-col rounded-2xl border border-cyan-500/35 dark:border-cyan-400/35 bg-white/95 dark:bg-[#080E16]/95 backdrop-blur-2xl shadow-[0_16px_50px_rgba(8,145,178,0.22),0_0_2px_1px_rgba(8,145,178,0.25)] dark:shadow-[0_0_45px_rgba(0,217,255,0.18),inset_0_1px_0_rgba(0,217,255,0.25)] overflow-hidden"
             style={{
               width: `${dimensions.width}px`,
               height: `${dimensions.height}px`,
-              maxWidth: 'calc(100vw - 20px)',
-              maxHeight: 'calc(100vh - 20px)',
+              maxWidth: 'calc(100vw - 16px)',
+              maxHeight: 'calc(100vh - 16px)',
             }}
             initial={{ opacity: 0, y: 30, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -370,7 +375,7 @@ export const CyberGuardAIChatbot: React.FC<CyberGuardAIChatbotProps> = ({
                     <h3 className="font-sans text-xs md:text-sm font-black tracking-wide text-slate-950 dark:text-white">
                       CYBERGUARD AI
                     </h3>
-                    <span className="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold bg-cyan-500/15 text-cyan-700 dark:text-cyan-400 border border-cyan-500/30">
+                    <span className="hidden sm:inline-block px-1.5 py-0.2 rounded text-[9px] font-mono font-bold bg-cyan-500/15 text-cyan-700 dark:text-cyan-400 border border-cyan-500/30">
                       DRAGGABLE
                     </span>
                   </div>

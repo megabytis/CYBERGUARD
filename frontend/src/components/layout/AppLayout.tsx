@@ -10,6 +10,7 @@ export const CyberGuardAppShell: React.FC = () => {
   const [isCopilotOpen, setIsCopilotOpen] = useState(false);
   const [activeScan, setActiveScan] = useState<ScanRecord | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   const handleOpenCopilot = (scan?: ScanRecord | null) => {
     if (scan) {
@@ -19,11 +20,28 @@ export const CyberGuardAppShell: React.FC = () => {
   };
 
   const toggleSidebar = () => {
-    setSidebarCollapsed((prev) => !prev);
+    if (typeof window !== 'undefined' && window.innerWidth <= 768) {
+      setMobileNavOpen((prev) => !prev);
+    } else {
+      setSidebarCollapsed((prev) => !prev);
+    }
   };
 
   return (
-    <div className={`app-shell selection:bg-cyan-500/20 selection:text-cyan-400 ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
+    <div
+      className={`app-shell selection:bg-cyan-500/20 selection:text-cyan-400 ${
+        sidebarCollapsed ? 'sidebar-collapsed' : ''
+      } ${mobileNavOpen ? 'mobile-nav-open' : ''}`}
+    >
+      {/* Mobile Darkened Backdrop */}
+      {mobileNavOpen && (
+        <div
+          onClick={() => setMobileNavOpen(false)}
+          className="fixed inset-0 bg-black/65 backdrop-blur-sm z-40 md:hidden animate-in fade-in duration-200"
+          aria-hidden="true"
+        />
+      )}
+
       {/* Global Command Palette (⌘ K) */}
       <GlassCommandPalette onOpenCopilot={() => handleOpenCopilot()} />
 
@@ -31,6 +49,7 @@ export const CyberGuardAppShell: React.FC = () => {
       <GlassSidebar
         isCollapsed={sidebarCollapsed}
         onOpenCopilot={() => handleOpenCopilot()}
+        onCloseMobile={() => setMobileNavOpen(false)}
       />
 
       {/* Main Container */}
