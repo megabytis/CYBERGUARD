@@ -113,6 +113,3 @@ docker compose down
 - **Frontend Application:** [http://localhost](http://localhost) (Port 80)
 - **Direct Backend API:** [http://localhost:8000](http://localhost:8000)
 - **API Documentation (Swagger):** [http://localhost:8000/docs](http://localhost:8000/docs)
-- **Default Analyst Credentials:**
-  - **Email:** `analyst@cyberguard.internal`
-  - **Password:** `CyberGuard2026!SecOps`
