@@ -1,6 +1,6 @@
 from typing import List
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import Field
+from pydantic import Field, model_validator
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
@@ -9,10 +9,10 @@ class Settings(BaseSettings):
     )
 
     app_name: str = "CYBERGUARD"
-    environment: str = "development"
-    debug: bool = True
-    port: int = 8000
-    host: str = "127.0.0.1"
+    environment: str = Field(default="development", validation_alias="ENVIRONMENT")
+    debug: bool = Field(default=True, validation_alias="DEBUG")
+    port: int = Field(default=8000, validation_alias="PORT")
+    host: str = Field(default="0.0.0.0", validation_alias="HOST")
 
     # Cryptographic secret for signing sessions
     secret_key: str = Field(
@@ -21,8 +21,19 @@ class Settings(BaseSettings):
     )
     session_expire_hours: int = 24
     cookie_name: str = "cg_session"
-    cookie_secure: bool = False
-    cookie_samesite: str = "lax"
+    cookie_secure: bool = Field(default=False, validation_alias="COOKIE_SECURE")
+    cookie_samesite: str = Field(default="lax", validation_alias="COOKIE_SAMESITE")
+
+    @model_validator(mode="after")
+    def configure_production_defaults(self):
+        if self.environment.lower() in ("production", "prod"):
+            # In production (e.g. Render HTTPS), enforce secure cookies
+            if not self.cookie_secure:
+                object.__setattr__(self, "cookie_secure", True)
+            # Default to 'none' so cross-origin Vercel <-> Render cookies are preserved
+            if self.cookie_samesite == "lax":
+                object.__setattr__(self, "cookie_samesite", "none")
+        return self
 
     cors_origins: List[str] = [
         "http://localhost",

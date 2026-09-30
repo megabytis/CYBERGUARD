@@ -33,12 +33,19 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS Configuration
+# CORS Configuration - Supports localhost, Vercel deployments (*.vercel.app), and custom origins
+raw_cors = settings.cors_origins
+if isinstance(raw_cors, str):
+    parsed_origins = [o.strip() for o in raw_cors.split(",") if o.strip()]
+else:
+    parsed_origins = list(raw_cors)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins,
+    allow_origins=parsed_origins,
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 

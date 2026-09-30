@@ -4,7 +4,11 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query, UploadFile
 from sqlalchemy.orm import Session
 from sqlalchemy import select, desc, func
 from PIL import Image
-from pyzbar.pyzbar import decode as pyzbar_decode
+try:
+    from pyzbar.pyzbar import decode as pyzbar_decode
+except (ImportError, Exception):
+    pyzbar_decode = None
+
 
 from app.database import get_db
 from app.models import User, ScanRecord, ScanFinding, AuditEvent
@@ -131,6 +135,12 @@ async def analyze_qr_code(
         image_bytes = await file.read()
         if len(image_bytes) > 5 * 1024 * 1024:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Image file exceeds 5MB size limit.")
+
+        if pyzbar_decode is None:
+            raise HTTPException(
+                status_code=status.HTTP_501_NOT_IMPLEMENTED,
+                detail="QR decoding engine (libzbar) is not installed on this environment. Please run via Docker.",
+            )
 
         image = Image.open(io.BytesIO(image_bytes))
         decoded_objs = pyzbar_decode(image)

@@ -166,9 +166,9 @@ export const AnalysisResultScreen: React.FC<AnalysisResultScreenProps> = ({
     setIsGeneratingPdf(true);
     try {
       const rep = await api.generateReport(scan.id);
-      window.open(`/api/reports/download/${rep.id}`, '_blank');
+      window.open(api.getUrl(`/reports/download/${rep.id}`), '_blank');
     } catch {
-      window.open(`/api/reports/download/${scan.id}`, '_blank');
+      window.open(api.getUrl(`/reports/download/${scan.id}`), '_blank');
     } finally {
       setIsGeneratingPdf(false);
     }

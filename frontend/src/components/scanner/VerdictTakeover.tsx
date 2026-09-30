@@ -13,6 +13,7 @@ import { GlassButton } from '@/components/ui/GlassButton';
 import { GlassBadge } from '@/components/ui/GlassBadge';
 import { RollingNumber } from '@/components/ui/RollingNumber';
 import { ForensicNarrative } from './ForensicNarrative';
+import { api } from '@/lib/api';
 import type { Evidence, Verdict } from './types';
 
 type VerdictTakeoverProps = {
@@ -138,7 +139,7 @@ export const VerdictTakeover: React.FC<VerdictTakeoverProps> = ({
               <GlassButton
                 variant="secondary"
                 size="md"
-                onClick={() => window.open(`/api/reports/download/${scanId}`, '_blank')}
+                onClick={() => window.open(api.getUrl(`/reports/download/${scanId}`), '_blank')}
                 className="text-sm font-semibold text-slate-800 dark:text-white/85 hover:text-cyan-700 dark:hover:text-white"
               >
                 <Download size={16} className="mr-1.5" />

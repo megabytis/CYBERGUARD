@@ -86,8 +86,24 @@ export interface UserPreferences {
   reduced_motion: boolean;
 }
 
+const getApiBaseUrl = (): string => {
+  const envUrl = (import.meta as any).env?.VITE_API_URL;
+  if (!envUrl) return '/api';
+  const trimmed = String(envUrl).replace(/\/+$/, '');
+  return trimmed.endsWith('/api') ? trimmed : `${trimmed}/api`;
+};
+
 class ApiService {
-  private baseUrl = '/api';
+  public baseUrl = getApiBaseUrl();
+
+  public getUrl(path: string): string {
+    const clean = path.startsWith('/') ? path : `/${path}`;
+    if (clean.startsWith('/api/')) {
+      return `${this.baseUrl}${clean.substring(4)}`;
+    }
+    return `${this.baseUrl}${clean}`;
+  }
+
 
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const config: RequestInit = {

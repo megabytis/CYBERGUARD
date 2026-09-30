@@ -43,9 +43,9 @@ export const ReportsPage: React.FC = () => {
   const handleDownloadPDF = async (scanId: string) => {
     try {
       const rep = await api.generateReport(scanId);
-      window.open(`/api/reports/download/${rep.id}`, '_blank');
+      window.open(api.getUrl(`/reports/download/${rep.id}`), '_blank');
     } catch {
-      window.open(`/api/reports/download/${scanId}`, '_blank');
+      window.open(api.getUrl(`/reports/download/${scanId}`), '_blank');
     }
   };
 

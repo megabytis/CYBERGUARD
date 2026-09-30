@@ -137,9 +137,9 @@ export const HistoryPage: React.FC = () => {
   const handleDownloadPDF = async (scanId: string) => {
     try {
       const rep = await api.generateReport(scanId);
-      window.open(`/api/reports/download/${rep.id}`, '_blank');
+      window.open(api.getUrl(`/reports/download/${rep.id}`), '_blank');
     } catch {
-      window.open(`/api/reports/download/${scanId}`, '_blank');
+      window.open(api.getUrl(`/reports/download/${scanId}`), '_blank');
     }
   };
 
@@ -161,7 +161,7 @@ export const HistoryPage: React.FC = () => {
 
         <div className="flex items-center gap-3">
           <a
-            href="/api/scans/export/csv"
+            href={api.getUrl('/scans/export/csv')}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex"
@@ -172,7 +172,7 @@ export const HistoryPage: React.FC = () => {
           </a>
 
           <a
-            href="/api/scans/export/json"
+            href={api.getUrl('/scans/export/json')}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex"
