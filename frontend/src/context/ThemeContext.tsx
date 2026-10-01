@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-export type Theme = 'dark' | 'light';
+export type Theme = 'dark' | 'light' | string;
 
 interface ThemeContextType {
   theme: Theme;
@@ -18,18 +18,20 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [theme, setThemeState] = useState<Theme>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('cyberguard_theme') as Theme;
-      if (saved === 'light' || saved === 'dark') return saved;
+      if (saved) return saved;
     }
     return 'dark'; // Strictly default to dark theme as before
   });
 
   useEffect(() => {
     const root = document.documentElement;
+    root.classList.remove('light', 'collageart');
     if (theme === 'light') {
       root.classList.remove('dark');
       root.classList.add('light');
+    } else if (theme === 'collageart') {
+      root.classList.add('dark', 'collageart');
     } else {
-      root.classList.remove('light');
       root.classList.add('dark');
     }
     localStorage.setItem('cyberguard_theme', theme);

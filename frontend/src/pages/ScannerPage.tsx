@@ -19,6 +19,8 @@ import { VerdictTakeover } from '@/components/scanner/VerdictTakeover';
 import {
   parseUrlToScanProfile,
   phishingProfile,
+  rnicrosoftProfile,
+  demoProfile,
   safeProfile,
   ScanProfile,
 } from '@/components/scanner/types';
@@ -367,6 +369,28 @@ export const ScannerPage: React.FC<{ onOpenCopilot?: (scan?: ScanRecord | null) 
                 }}
               >
                 Phishing Threat (PayPal Spoof)
+              </button>
+              <button
+                type="button"
+                className="text-[16px] px-3.5 py-1 rounded-full border border-critical/40 bg-critical/10 text-critical font-bold hover:bg-critical/20 transition cursor-pointer"
+                onClick={() => {
+                  setInput(rnicrosoftProfile.url);
+                  setError(null);
+                  setUrlScanState(null);
+                }}
+              >
+                Typosquat (Rnicrosoft)
+              </button>
+              <button
+                type="button"
+                className="text-[16px] px-3.5 py-1 rounded-full border border-amber-500/40 bg-amber-500/10 text-amber-500 font-bold hover:bg-amber-500/20 transition cursor-pointer"
+                onClick={() => {
+                  setInput(demoProfile.url);
+                  setError(null);
+                  setUrlScanState(null);
+                }}
+              >
+                Demo Link (SafeBrowsing)
               </button>
               <button
                 type="button"

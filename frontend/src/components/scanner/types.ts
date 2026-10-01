@@ -58,6 +58,48 @@ export const phishingProfile: ScanProfile = {
   ],
 };
 
+export const rnicrosoftProfile: ScanProfile = {
+  url: 'https://login.rnicrosoft.com/oauth2/v2.0/authorize',
+  segments: [
+    { label: 'scheme', value: 'https://', state: 'safe' },
+    { label: 'subdomain', value: 'login', state: 'review', reason: 'Authentication keyword' },
+    { label: 'domain', value: 'rnicrosoft', state: 'critical', reason: 'Typosquatting character substitution (rn for m)' },
+    { label: 'TLD', value: '.com', state: 'safe' },
+    { label: 'path', value: '/oauth2/v2.0/authorize', state: 'critical', reason: 'OAuth credential harvesting endpoint' },
+    { label: 'query', value: '—', state: 'safe' },
+  ],
+  stages: demoStages,
+  score: 92,
+  verdict: 'critical',
+  action: 'Deceptive typosquatting domain detected (rnicrosoft replacing microsoft). Do not submit credentials.',
+  evidence: [
+    { label: 'Typosquatted Brand Spoof', detail: 'Domain "rnicrosoft" uses "rn" to visually masquerade as "m" in Microsoft.', severity: 'critical' },
+    { label: 'Credential Harvest Path', detail: 'The request path targets OAuth authorization endpoints commonly abused in phishing lures.', severity: 'critical' },
+    { label: 'Authentication Keyword', detail: 'Subdomain "login" is nested to increase perceived authenticity.', severity: 'review' },
+  ],
+};
+
+export const demoProfile: ScanProfile = {
+  url: 'https://testsafebrowsing.appspot.com/s/phishing.html',
+  segments: [
+    { label: 'scheme', value: 'https://', state: 'safe' },
+    { label: 'subdomain', value: 'testsafebrowsing', state: 'critical', reason: 'Google SafeBrowsing threat evaluation host' },
+    { label: 'domain', value: 'appspot', state: 'review', reason: 'Cloud hosting environment' },
+    { label: 'TLD', value: '.com', state: 'safe' },
+    { label: 'path', value: '/s/phishing.html', state: 'critical', reason: 'Synthetic security test harness path' },
+    { label: 'query', value: '—', state: 'safe' },
+  ],
+  stages: demoStages,
+  score: 88,
+  verdict: 'critical',
+  action: 'Official SafeBrowsing security test URL detected. Ideal for testing security pipelines and live alerts.',
+  evidence: [
+    { label: 'SafeBrowsing Test Endpoint', detail: 'Host is part of Google SafeBrowsing public threat verification infrastructure.', severity: 'critical' },
+    { label: 'Synthetic Phishing Payload', detail: 'Contains verified test signatures to evaluate defensive filtering.', severity: 'critical' },
+    { label: 'Cloud Hosting Platform', detail: 'AppSpot PaaS infrastructure utilized for sandbox validation.', severity: 'review' },
+  ],
+};
+
 export const safeProfile: ScanProfile = {
   url: 'https://www.nasa.gov/learning-resources/',
   segments: [
@@ -154,7 +196,7 @@ export function parseUrlToScanProfile(rawUrl: string): ScanProfile {
       'account',
       'auth',
     ];
-    const hasTypoInSubdomain = /paypa[1l]|g[0o]{2}gle|app[1l]e|m[i1]crosoft|amaz[0o]n/i.test(subdomain);
+    const hasTypoInSubdomain = /paypa[1l]|g[0o]{2}gle|app[1l]e|m[i1]crosoft|rn[i1]crosoft|rnicrosoft|amaz[0o]n/i.test(subdomain);
     const hasBrandInSubdomain =
       brandKeywords.some((b) => subdomain.toLowerCase().includes(b)) || hasTypoInSubdomain;
     const isDeepSubdomain = subdomain.split('.').length >= 2 || subdomain.length > 22;
@@ -165,7 +207,7 @@ export function parseUrlToScanProfile(rawUrl: string): ScanProfile {
         value: subdomain || '—',
         state: 'critical',
         reason: hasTypoInSubdomain
-          ? 'Typosquatting brand lure nested in subdomain (paypa1)'
+          ? 'Typosquatting brand lure nested in subdomain (paypa1 / rnicrosoft)'
           : 'Impersonation brand cue nested in subdomain',
       });
       evidence.push({
@@ -215,7 +257,7 @@ export function parseUrlToScanProfile(rawUrl: string): ScanProfile {
       safeDomains.includes(domain.toLowerCase()) &&
       ['.gov', '.edu', '.com', '.org', '.io', '.net'].includes(tld.toLowerCase());
     const hasTypoSubstitute =
-      /paypa[1l]|g[0o]{2}gle|app[1l]e|m[i1]crosoft|amaz[0o]n/i.test(domain) &&
+      /paypa[1l]|g[0o]{2}gle|app[1l]e|m[i1]crosoft|rn[i1]crosoft|rnicrosoft|amaz[0o]n/i.test(domain) &&
       !isKnownSafeDomain;
     const hasHyphenChaining = (domain.match(/-/g) || []).length >= 2;
     const hasBrandInDomain =

@@ -406,13 +406,13 @@ export const LandingPage: React.FC = () => {
   return (
     <main className="landing selection:bg-cyan-500/20 selection:text-cyan-400">
       {/* Navigation */}
-      <nav>
+      <nav className="relative z-50 !max-w-full !px-6 lg:!px-12">
         <Logo />
         <div className="links">
           <a href="#how">How it works</a>
           <a href="#reports">Reports</a>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 ml-auto shrink-0">
           <ThemeToggle />
         </div>
       </nav>

@@ -61,6 +61,7 @@ async def seed_database():
             print("[CYBERGUARD] Initializing realistic baseline defensive scans...")
             baseline_payloads = [
                 ("url", "http://secure-login.paypal.account-verify.xyz/login?session=8842"),
+                ("url", "https://login.rnicrosoft.com/oauth2/v2.0/authorize"),
                 ("email", "From: CEO Executive Office <tim.cook@apple-operations-internal.cc>\nReply-To: wire-processing@secure-banking-portal.net\nSubject: URGENT: Immediate Wire Transfer Required for Acquisition Closing\n\nPlease execute the attached international wire transfer of $840,000 before 4 PM UTC.\nDo not discuss with other staff until public disclosure. Immediate verification needed."),
                 ("auth_log", "Sep 27 11:04:12 auth-server sshd[1401]: Failed password for invalid user admin from 198.51.100.44 port 41232 ssh2\nSep 27 11:04:14 auth-server sshd[1402]: Failed password for invalid user root from 198.51.100.44 port 41234 ssh2\nSep 27 11:04:16 auth-server sshd[1403]: Failed password for invalid user oracle from 198.51.100.44 port 41236 ssh2\nSep 27 11:04:18 auth-server sshd[1404]: Failed password for invalid user deploy from 198.51.100.44 port 41238 ssh2\nSep 27 11:04:20 auth-server sshd[1405]: Accepted password for root from 198.51.100.44 port 41240 ssh2"),
                 ("message", "USPS Notice: Your package delivery is blocked due to an unpaid $1.99 customs fee. Confirm your address and card at bit.ly/usps-redelivery-tax to avoid return."),

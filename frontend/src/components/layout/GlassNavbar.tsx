@@ -33,9 +33,6 @@ export const GlassNavbar: React.FC<GlassNavbarProps> = ({
           <i /> AI READY
         </span>
 
-        {/* Theme Toggle (Dark / Light) */}
-        <ThemeToggle />
-
         {/* Notifications Icon with popover */}
         <div className="relative">
           <Bell
@@ -74,6 +71,11 @@ export const GlassNavbar: React.FC<GlassNavbarProps> = ({
             <span className="w-1.5 h-1.5 rounded-full bg-cyan animate-pulse" />
             CONSOLE LIVE
           </span>
+        </div>
+
+        {/* Theme Toggle Transferred to Extreme Right Side */}
+        <div className="ml-4 pl-3 border-l border-slate-200/20 dark:border-white/10 flex items-center shrink-0">
+          <ThemeToggle />
         </div>
       </div>
     </header>

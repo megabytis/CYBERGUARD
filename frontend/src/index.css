@@ -3666,3 +3666,180 @@ html.light .landing footer {
     stroke-dashoffset: 0 !important;
   }
 }
+
+/* ========================================================
+   CYBERGUARD COLLAGEART THEME (html.collageart)
+   Pop Cutout, Mixed Media Avant-Garde Cyber Aesthetic
+   Zero blue color, completely unique warm pop palette
+   Preserves dark/light theme 100% untouched
+   ======================================================== */
+html.collageart {
+  --background: #141218;
+  --background-secondary: #1E1A24;
+  --background-elevated: #282332;
+  --surface: #1E1A24;
+  --surface-glass: rgba(30, 26, 36, 0.94);
+  --surface-glass-elevated: #282332;
+  --surface-glass-hover: #332B40;
+  --text-primary: #F8FAFC;
+  --text-secondary: #FACC15;
+  --text-muted: #FF781F;
+  --border: #FACC15;
+  --border-bright: #EC4899;
+  --protected: #A3E635;
+  --information: #FF781F;
+  --suspicious: #FACC15;
+  --critical: #FF4757;
+
+  /* v0 Design System Tokens (No Blue) */
+  --ink: #141218;
+  --muted-ink: #FACC15;
+  --cyan: #FF781F;
+  --lime: #A3E635;
+  --panel: #1E1A24;
+  --line: #FACC15;
+  --red: #FF4757;
+  --amber: #FACC15;
+}
+
+html.collageart body {
+  background-color: #141218 !important;
+  background-image: repeating-linear-gradient(45deg, rgba(250, 204, 21, 0.05) 0px, rgba(250, 204, 21, 0.05) 2px, transparent 2px, transparent 12px) !important;
+  color: #F8FAFC !important;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Core Glass & Panels in CollageArt Cutout Theme */
+html.collageart .glass-panel {
+  background: #1E1A24 !important;
+  border: 2px solid #FACC15 !important;
+  box-shadow: 4px 4px 0px #EC4899, -2px -2px 0px rgba(255, 120, 31, 0.5) !important;
+  backdrop-filter: blur(10px) !important;
+  border-radius: 12px !important;
+}
+
+html.collageart .glass-panel-elevated {
+  background: #282332 !important;
+  border: 2px solid #EC4899 !important;
+  box-shadow: 6px 6px 0px #FACC15, -3px -3px 0px #FF781F !important;
+  border-radius: 14px !important;
+}
+
+html.collageart .glass-card {
+  background: #1E1A24 !important;
+  border: 2px solid rgba(250, 204, 21, 0.7) !important;
+  box-shadow: 3px 3px 0px #EC4899 !important;
+  border-radius: 10px !important;
+}
+
+html.collageart .glass-card:hover {
+  border-color: #A3E635 !important;
+  box-shadow: 5px 5px 0px #FACC15, -2px -2px 0px #FF781F !important;
+  transform: translate(-2px, -2px) !important;
+}
+
+/* CollageArt Theme Buttons */
+html.collageart .button.primary,
+html.collageart .btn-cyan {
+  background: linear-gradient(135deg, #FACC15, #EC4899) !important;
+  color: #0F172A !important;
+  border: 2px solid #FFFFFF !important;
+  box-shadow: 4px 4px 0px #FF781F !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.04em !important;
+  border-radius: 10px !important;
+}
+
+html.collageart .button.primary:hover,
+html.collageart .btn-cyan:hover {
+  background: linear-gradient(135deg, #A3E635, #FACC15) !important;
+  box-shadow: 6px 6px 0px #EC4899 !important;
+  transform: translate(-2px, -2px) !important;
+}
+
+html.collageart .button.ghost {
+  background: rgba(236, 72, 153, 0.15) !important;
+  color: #FACC15 !important;
+  border: 2px solid #EC4899 !important;
+  font-weight: 800 !important;
+  border-radius: 10px !important;
+}
+
+html.collageart .button.ghost:hover {
+  background: rgba(250, 204, 21, 0.25) !important;
+  color: #FFFFFF !important;
+  border-color: #FACC15 !important;
+  box-shadow: 3px 3px 0px #FF781F !important;
+}
+
+/* CollageArt Theme Form Controls & Scrollbars (No Blue) */
+html.collageart ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+html.collageart ::-webkit-scrollbar-track {
+  background: #141218;
+}
+
+html.collageart ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #FACC15, #FF781F, #EC4899);
+  border-radius: 5px;
+  border: 1px solid #FFFFFF;
+}
+
+html.collageart ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #A3E635, #FACC15, #FF4757);
+}
+
+html.collageart ::selection {
+  background: #EC4899;
+  color: #FACC15;
+}
+
+html.collageart input,
+html.collageart textarea,
+html.collageart select {
+  background-color: #1E1A24 !important;
+  color: #F8FAFC !important;
+  border-color: #FACC15 !important;
+  border-radius: 8px !important;
+}
+
+html.collageart input:focus,
+html.collageart textarea:focus,
+html.collageart select:focus {
+  border-color: #EC4899 !important;
+  box-shadow: 4px 4px 0px #FACC15 !important;
+  outline: none !important;
+}
+
+/* X-Ray Scanner & Cards in CollageArt Theme */
+html.collageart .xray-scanner,
+html.collageart [class*="x-ray"] {
+  background: #1E1A24 !important;
+  border: 2px solid #EC4899 !important;
+  box-shadow: 5px 5px 0px #FACC15 !important;
+  border-radius: 14px !important;
+}
+
+html.collageart .segment-block,
+html.collageart .stage-chip {
+  background: #282332 !important;
+  border: 1.5px solid #FACC15 !important;
+  color: #FACC15 !important;
+  border-radius: 6px !important;
+}
+
+html.collageart .stage-chip-active {
+  background: linear-gradient(135deg, #EC4899, #FACC15) !important;
+  border-color: #FFFFFF !important;
+  color: #0F172A !important;
+  font-weight: 800 !important;
+  box-shadow: 3px 3px 0px #FF781F !important;
+}
+
+
+
+
+
