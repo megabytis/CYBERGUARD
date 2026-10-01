@@ -33,17 +33,20 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS Configuration - Supports localhost, Vercel deployments (*.vercel.app), and custom origins
+# CORS Configuration - Supports localhost, Vercel, custom domains, and cloud environments
 raw_cors = settings.cors_origins
 if isinstance(raw_cors, str):
     parsed_origins = [o.strip() for o in raw_cors.split(",") if o.strip()]
 else:
     parsed_origins = list(raw_cors)
 
+if "https://cyberguard.bhuktatech.in" not in parsed_origins:
+    parsed_origins.append("https://cyberguard.bhuktatech.in")
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=parsed_origins,
-    allow_origin_regex=r"https://.*\.vercel\.app",
+    allow_origin_regex=r"https?://.*",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
