@@ -317,7 +317,7 @@ export const AnalysisResultScreen: React.FC<AnalysisResultScreenProps> = ({
                 <span className="text-slate-400 dark:text-white/40 mr-2 select-none font-bold">
                   TARGET:
                 </span>
-                <span className="font-semibold text-slate-900 dark:text-white">
+                <span className={`font-semibold text-slate-900 dark:text-white ${(scan.input_summary || scan.input_payload).toLowerCase().includes('rn') ? 'font-sans' : ''}`}>
                   {scan.input_summary || scan.input_payload.slice(0, 100)}
                 </span>
               </div>

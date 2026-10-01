@@ -50,10 +50,12 @@ Do not discuss with other staff until public disclosure. Immediate verification 
 Sep 27 11:04:14 auth-server sshd[1402]: Failed password for invalid user root from 198.51.100.44 port 41234 ssh2
 Sep 27 11:04:16 auth-server sshd[1403]: Failed password for invalid user oracle from 198.51.100.44 port 41236 ssh2
 Sep 27 11:04:18 auth-server sshd[1404]: Failed password for invalid user deploy from 198.51.100.44 port 41238 ssh2`,
-  headers: `From: PayPal Security <service@paypal.com>
-Reply-To: phish-collector@scam-server.cc
-Return-Path: bounce@attacker-domain.ru
-Authentication-Results: mx.google.com; spf=fail; dkim=fail; dmarc=fail`,
+  headers: `From: service@rnicrosoft.com
+Subject: Urgent: Verify your Microsoft account
+Hi,
+We detected unusual activity on your account. Please verify your account within 24 hours to avoid temporary suspension.
+Verify here: http://login.rnicrosoft.com/verify
+Microsoft Account Security Team`,
   network: `2026-09-27T11:00:01Z 10.0.4.15:49182 -> 203.0.113.88:4444 PROTO=TCP BYTES_OUT=1420 BYTES_IN=310
 2026-09-27T11:00:31Z 10.0.4.15:49184 -> 203.0.113.88:4444 PROTO=TCP BYTES_OUT=1420 BYTES_IN=310`,
 };
@@ -372,14 +374,14 @@ export const ScannerPage: React.FC<{ onOpenCopilot?: (scan?: ScanRecord | null) 
               </button>
               <button
                 type="button"
-                className="text-[16px] px-3.5 py-1 rounded-full border border-critical/40 bg-critical/10 text-critical font-bold hover:bg-critical/20 transition cursor-pointer"
+                className="text-[16px] px-3.5 py-1 rounded-full border border-critical/40 bg-critical/10 text-critical font-bold hover:bg-critical/20 transition cursor-pointer font-sans"
                 onClick={() => {
                   setInput(rnicrosoftProfile.url);
                   setError(null);
                   setUrlScanState(null);
                 }}
               >
-                Typosquat (Rnicrosoft)
+                Typosquat (rnicrosoft)
               </button>
               <button
                 type="button"
@@ -446,7 +448,7 @@ export const ScannerPage: React.FC<{ onOpenCopilot?: (scan?: ScanRecord | null) 
               onChange={(e) => setInput(e.target.value)}
               placeholder={currentTypeConfig.placeholder}
               rows={activeTab === 'url' ? 3 : 7}
-              className={activeTab === 'url' ? 'font-mono text-[16px]' : ''}
+              className={activeTab === 'headers' || input.toLowerCase().includes('rn') ? 'font-sans text-[16px]' : activeTab === 'url' ? 'font-mono text-[16px]' : ''}
             />
           )}
 

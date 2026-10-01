@@ -141,7 +141,7 @@ export const XRayScanner: React.FC<XRayScannerProps> = ({
                       <span className="mb-2 block text-[16px] font-sans uppercase font-bold tracking-[0.18em] text-slate-600 dark:text-white/70">
                         {segment.label}
                       </span>
-                      <span className="block truncate font-mono text-[clamp(1.4rem,2.5vw,2.1rem)] font-bold text-slate-950 dark:text-white">
+                      <span className={`block truncate text-[clamp(1.4rem,2.5vw,2.1rem)] font-bold text-slate-950 dark:text-white ${segment.value.toLowerCase().includes('rn') ? 'font-sans' : 'font-mono'}`}>
                         {segment.value}
                       </span>
                       {settled && (
